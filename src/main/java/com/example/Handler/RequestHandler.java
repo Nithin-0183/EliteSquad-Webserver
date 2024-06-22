@@ -29,57 +29,35 @@ public class RequestHandler {
     }
 
     private void handleGet(HttpRequest request, HttpResponse response) {
-        String uri = request.getUri();
-        HttpStatus status = HttpStatusMapping.STATUS_CODES.getOrDefault(uri, HttpStatus.BAD_REQUEST);
-        String responseBody = HttpStatusMapping.RESPONSE_BODIES.getOrDefault(uri, status.getReasonPhrase());
-
-        responseBody = "GET " + responseBody;
-
-        response.setStatus(status.getCode());
-        response.setBody(responseBody);
-        response.addHeader("Content-Type", "text/plain");
+        handleResponse("GET", request, response);
     }
 
     private void handlePost(HttpRequest request, HttpResponse response) {
-        String uri = request.getUri();
-        HttpStatus status = HttpStatusMapping.STATUS_CODES.getOrDefault(uri, HttpStatus.BAD_REQUEST);
-        String responseBody = HttpStatusMapping.RESPONSE_BODIES.getOrDefault(uri, status.getReasonPhrase());
-
-        responseBody = "POST " + responseBody;
-
-        response.setStatus(status.getCode());
-        response.setBody(responseBody);
-        response.addHeader("Content-Type", "text/plain");
+        handleResponse("POST", request, response);
     }
 
     private void handlePut(HttpRequest request, HttpResponse response) {
-        String uri = request.getUri();
-        HttpStatus status = HttpStatusMapping.STATUS_CODES.getOrDefault(uri, HttpStatus.BAD_REQUEST);
-        String responseBody = HttpStatusMapping.RESPONSE_BODIES.getOrDefault(uri, status.getReasonPhrase());
-
-        responseBody = "PUT " + responseBody;
-
-        response.setStatus(status.getCode());
-        response.setBody(responseBody);
-        response.addHeader("Content-Type", "text/plain");
+        handleResponse("PUT", request, response);
     }
 
     private void handleDelete(HttpRequest request, HttpResponse response) {
+        handleResponse("DELETE", request, response);
+    }
+
+    private void handleBadRequest(HttpResponse response) {
+        response.setStatus(HttpStatus.BAD_REQUEST.getCode());
+        response.setBody("Bad Request");
+        response.addHeader("Content-Type", "text/plain");
+    }
+
+    private void handleResponse(String method, HttpRequest request, HttpResponse response) {
         String uri = request.getUri();
         HttpStatus status = HttpStatusMapping.STATUS_CODES.getOrDefault(uri, HttpStatus.BAD_REQUEST);
         String responseBody = HttpStatusMapping.RESPONSE_BODIES.getOrDefault(uri, status.getReasonPhrase());
 
-        responseBody = "DELETE " + responseBody;
+        responseBody = method + " " + responseBody;
 
         response.setStatus(status.getCode());
-        response.setBody(responseBody);
-        response.addHeader("Content-Type", "text/plain");
-    }
-
-    private void handleBadRequest(HttpResponse response) {
-        String responseBody = "Bad Request";
-
-        response.setStatus(HttpStatus.BAD_REQUEST.getCode());
         response.setBody(responseBody);
         response.addHeader("Content-Type", "text/plain");
     }
