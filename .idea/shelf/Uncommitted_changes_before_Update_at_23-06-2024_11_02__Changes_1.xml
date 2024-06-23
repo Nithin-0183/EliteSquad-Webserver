@@ -1,0 +1,94 @@
+<changelist name="Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1" date="1719136983688" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Update at 23-06-2024 11:02 [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/com/example/userserver/config/WebSecurityConfig.class" />
+    <option name="AFTER_PATH" value="target/classes/com/example/userserver/config/WebSecurityConfig.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/WebSecurityConfig.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/com/example/userserver/controller/ChatController.class" />
+    <option name="AFTER_PATH" value="target/classes/com/example/userserver/controller/ChatController.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/ChatController.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/com/example/userserver/service/ChatService.class" />
+    <option name="AFTER_PATH" value="target/classes/com/example/userserver/service/ChatService.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/ChatService.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/com/example/userserver/repository/NotificationRepository.class" />
+    <option name="AFTER_PATH" value="target/classes/com/example/userserver/repository/NotificationRepository.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/NotificationRepository.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/com/example/userserver/repository/ChatMessageRepository.class" />
+    <option name="AFTER_PATH" value="target/classes/com/example/userserver/repository/ChatMessageRepository.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/ChatMessageRepository.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/com/example/userserver/service/SecurityService.class" />
+    <option name="AFTER_PATH" value="target/classes/com/example/userserver/service/SecurityService.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/SecurityService.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/com/example/userserver/controller/UserController.class" />
+    <option name="AFTER_PATH" value="target/classes/com/example/userserver/controller/UserController.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/UserController.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/com/example/userserver/model/ChatMessage.class" />
+    <option name="AFTER_PATH" value="target/classes/com/example/userserver/model/ChatMessage.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/ChatMessage.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/com/example/userserver/model/Notification.class" />
+    <option name="AFTER_PATH" value="target/classes/com/example/userserver/model/Notification.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/Notification.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/com/example/userserver/repository/UserRepository.class" />
+    <option name="AFTER_PATH" value="target/classes/com/example/userserver/repository/UserRepository.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/UserRepository.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/com/example/userserver/service/UserService.class" />
+    <option name="AFTER_PATH" value="target/classes/com/example/userserver/service/UserService.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/UserService.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/com/example/userserver/controller/NotificationController.class" />
+    <option name="AFTER_PATH" value="target/classes/com/example/userserver/controller/NotificationController.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/NotificationController.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/com/example/userserver/model/User.class" />
+    <option name="AFTER_PATH" value="target/classes/com/example/userserver/model/User.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/User.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/com/example/userserver/service/NotificationService.class" />
+    <option name="AFTER_PATH" value="target/classes/com/example/userserver/service/NotificationService.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/NotificationService.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/com/example/userserver/config/WebClientConfig.class" />
+    <option name="AFTER_PATH" value="target/classes/com/example/userserver/config/WebClientConfig.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/WebClientConfig.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/com/example/userserver/UserServerApplication.class" />
+    <option name="AFTER_PATH" value="target/classes/com/example/userserver/UserServerApplication.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/UserServerApplication.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/com/example/userserver/controller/SecurityController.class" />
+    <option name="AFTER_PATH" value="target/classes/com/example/userserver/controller/SecurityController.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/SecurityController.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="target/classes/com/example/userserver/controller/UserRegistrationDto.class" />
+    <option name="AFTER_PATH" value="target/classes/com/example/userserver/controller/UserRegistrationDto.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/UserRegistrationDto.class" />
+  </binary>
+</changelist>
