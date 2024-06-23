@@ -1,4 +1,4 @@
-package com.example.http;
+package com.ues.http;
 
 public enum HttpStatus {
     OK(200, "OK"),
