@@ -1,4 +1,4 @@
-package com.example;
+package com.ues;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -10,9 +10,9 @@ import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.example.Handler.RequestHandler;
-import com.example.http.HttpRequest;
-import com.example.http.HttpResponse;
+import com.ues.core.RequestHandler;
+import com.ues.http.HttpRequest;
+import com.ues.http.HttpResponse;
 
 public class NioHttpServer {
 
