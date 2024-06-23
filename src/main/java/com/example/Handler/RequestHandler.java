@@ -5,7 +5,14 @@ import com.example.http.HttpResponse;
 import com.example.http.HttpStatus;
 import com.example.http.HttpStatusMapping;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 public class RequestHandler {
+
+    private static final String WEB_ROOT = "./WEB_ROOT";
 
     public void handleRequest(HttpRequest request, HttpResponse response) {
         String method = request.getMethod().toString();
@@ -29,7 +36,54 @@ public class RequestHandler {
     }
 
     private void handleGet(HttpRequest request, HttpResponse response) {
-        handleResponse("GET", request, response);
+        //handleResponse("GET", request, response);
+        String uri = request.getUri();
+        File file = new File(WEB_ROOT, uri);
+
+        if (file.exists() && !file.isDirectory()) {
+            try {
+                byte[] fileContent = Files.readAllBytes(file.toPath());
+                String contentType = getContentType(file.getName());
+                response.setStatus(HttpStatus.OK.getCode());
+                response.addHeader("Content-Type", contentType);
+                response.addHeader("Content-Length", String.valueOf(fileContent.length));
+                response.setBody(new String(fileContent, "UTF-8"));
+            } catch (IOException e) {
+                handleInternalServerError(response);
+            }
+        } else {
+            handleNotFound(response);
+        }
+    }
+
+    private String getContentType(String fileName) {
+        if (fileName.endsWith(".html") || fileName.endsWith(".htm")) {
+            return "text/html";
+        } else if (fileName.endsWith(".css")) {
+            return "text/css";
+        } else if (fileName.endsWith(".js")) {
+            return "application/javascript";
+        } else if (fileName.endsWith(".png")) {
+            return "image/png";
+        } else if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
+            return "image/jpeg";
+        } else if (fileName.endsWith(".gif")) {
+            return "image/gif";
+        } else {
+            return "text/plain";  // Default Content Type
+        }
+    }
+
+    private void handleNotFound(HttpResponse response) {
+        response.setStatus(HttpStatus.NOT_FOUND.getCode());
+        response.setBody("404 Not Found");
+        response.addHeader("Content-Type", "text/plain");
+    }
+
+    private void handleInternalServerError(HttpResponse response) {
+        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getCode());
+        response.setBody("500 Internal Server Error");
+        response.addHeader("Content-Type", "text/plain");
     }
 
     private void handlePost(HttpRequest request, HttpResponse response) {
