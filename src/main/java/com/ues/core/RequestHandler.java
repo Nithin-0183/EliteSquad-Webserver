@@ -18,6 +18,11 @@ import reactor.core.publisher.Mono;
 public class RequestHandler {
 
     private static final String WEB_ROOT = "./WEB_ROOT";
+    private final ResourceManager resourceManager;
+
+    public RequestHandler(ResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
+    }
 
     public Mono<Void> handleRequest(HttpRequest request, HttpResponse response) {
         String method = request.getMethod().toString();
@@ -52,7 +57,7 @@ public class RequestHandler {
     }
 
     private Mono<Void> handleGetMessages(HttpResponse response) {
-        return ResourceManager.getMessages()
+        return resourceManager.getMessages()
             .flatMap(messages -> {
                 StringBuilder json = new StringBuilder("[");
                 for (Map<String, String> message : messages) {
@@ -94,7 +99,7 @@ public class RequestHandler {
         if (request.getUri().equals("/messages")) {
             Map<String, String> formData = parseRequestBody(request.getBody());
             if (isValidPostData(formData)) {
-                return ResourceManager.createMessage(formData)
+                return resourceManager.createMessage(formData)
                     .flatMap(isCreated -> {
                         if (isCreated) {
                             response.setStatus(HttpStatus.CREATED.getCode());
@@ -122,7 +127,7 @@ public class RequestHandler {
             String id = request.getUri().substring("/messages/".length());
             Map<String, String> formData = parseRequestBody(request.getBody());
             if (isValidPutData(formData)) {
-                return ResourceManager.updateMessage(id, formData)
+                return resourceManager.updateMessage(id, formData)
                     .flatMap(isUpdated -> {
                         if (isUpdated) {
                             response.setStatus(HttpStatus.OK.getCode());
@@ -148,7 +153,7 @@ public class RequestHandler {
     private Mono<Void> handleDelete(HttpRequest request, HttpResponse response) {
         if (request.getUri().startsWith("/messages/")) {
             String id = request.getUri().substring("/messages/".length());
-            return ResourceManager.deleteMessage(id)
+            return resourceManager.deleteMessage(id)
                 .flatMap(isDeleted -> {
                     if (isDeleted) {
                         response.setStatus(HttpStatus.NO_CONTENT.getCode());
@@ -233,5 +238,4 @@ public class RequestHandler {
     private boolean isValidPutData(Map<String, String> data) {
         return data.containsKey("message") && !data.get("message").isBlank();
     }
-    
 }

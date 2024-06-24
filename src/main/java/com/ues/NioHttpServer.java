@@ -12,6 +12,7 @@ import java.util.Set;
 
 import com.ues.core.RequestHandler;
 import com.ues.database.DatabaseConfig;
+import com.ues.database.ResourceManager;
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
 
@@ -33,6 +34,9 @@ public class NioHttpServer {
 
             System.out.println("NIO Server is listening on port " + PORT);
 
+            ResourceManager resourceManager = new ResourceManager();
+            RequestHandler handler = new RequestHandler(resourceManager);
+
             while (true) {
                 selector.select();
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
@@ -44,7 +48,7 @@ public class NioHttpServer {
                     if (key.isAcceptable()) {
                         handleAccept(key);
                     } else if (key.isReadable()) {
-                        handleRead(key);
+                        handleRead(key, handler);
                     }
 
                     keyIterator.remove();
@@ -64,7 +68,7 @@ public class NioHttpServer {
         System.out.println("Accepted connection from " + socketChannel);
     }
 
-    private static void handleRead(SelectionKey key) throws IOException {
+    private static void handleRead(SelectionKey key, RequestHandler handler) throws IOException {
         SocketChannel socketChannel = (SocketChannel) key.channel();
         ByteBuffer buffer = ByteBuffer.allocate(1024);
         int bytesRead = socketChannel.read(buffer);
@@ -79,7 +83,6 @@ public class NioHttpServer {
             HttpRequest httpRequest = new HttpRequest(request);
             HttpResponse response = new HttpResponse();
 
-            RequestHandler handler = new RequestHandler();
             Mono<Void> result = handler.handleRequest(httpRequest, response);
 
             result.doOnTerminate(() -> {

@@ -1,6 +1,6 @@
 package com.ues.http;
 
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.StandardCharsets; // 추가된 import
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +23,18 @@ public class HttpResponse {
 
     public void addHeader(String name, String value) {
         headers.put(name, value);
+    }
+
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public Map<String, String> getHeaders() {
+        return headers;
     }
 
     public byte[] getResponseBytes() {
