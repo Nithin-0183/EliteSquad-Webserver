@@ -15,10 +15,11 @@ import com.ues.database.DatabaseConfig;
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
 
+import reactor.core.publisher.Mono;
+
 public class NioHttpServer {
 
     private static final int PORT = 8080;
-    private static final int BUFFER_SIZE = 8192;
 
     public static void main(String[] args) {
         // Initialize the database
@@ -66,7 +67,7 @@ public class NioHttpServer {
 
     private static void handleRead(SelectionKey key) throws IOException {
         SocketChannel socketChannel = (SocketChannel) key.channel();
-        ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
+        ByteBuffer buffer = ByteBuffer.allocate(1024);
         int bytesRead = socketChannel.read(buffer);
 
         if (bytesRead == -1) {
@@ -80,16 +81,22 @@ public class NioHttpServer {
             HttpResponse response = new HttpResponse();
 
             RequestHandler handler = new RequestHandler();
-            handler.handleRequest(httpRequest, response);
+            Mono<Void> result = handler.handleRequest(httpRequest, response);
 
-            byte[] responseBytes = response.getResponseBytes();
-            buffer = ByteBuffer.allocate(responseBytes.length);
-            buffer.put(responseBytes);
-            buffer.flip();
-            while (buffer.hasRemaining()) {
-                socketChannel.write(buffer);
-            }
-            socketChannel.close();
+            result.doOnTerminate(() -> {
+                try {
+                    byte[] responseBytes = response.getResponseBytes();
+                    ByteBuffer responseBuffer = ByteBuffer.allocate(responseBytes.length);
+                    responseBuffer.put(responseBytes);
+                    responseBuffer.flip();
+                    while (responseBuffer.hasRemaining()) {
+                        socketChannel.write(responseBuffer);
+                    }
+                    socketChannel.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).subscribe();
         }
     }
 }

@@ -14,162 +14,180 @@ import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
 import com.ues.http.HttpStatus;
 
+import reactor.core.publisher.Mono;
+
 public class RequestHandler {
 
     private static final String WEB_ROOT = "./WEB_ROOT";
 
-    public void handleRequest(HttpRequest request, HttpResponse response) {
+    public Mono<Void> handleRequest(HttpRequest request, HttpResponse response) {
         String method = request.getMethod().toString();
         switch (method) {
             case "GET":
-                handleGet(request, response);
-                break;
+                return handleGet(request, response);
             case "POST":
-                handlePost(request, response);
-                break;
+                return handlePost(request, response);
             case "PUT":
-                handlePut(request, response);
-                break;
+                return handlePut(request, response);
             case "DELETE":
-                handleDelete(request, response);
-                break;
+                return handleDelete(request, response);
             default:
-                handleBadRequest(response);
-                break;
+                return handleBadRequest(response);
         }
     }
 
-    private void handleGet(HttpRequest request, HttpResponse response) {
+    private Mono<Void> handleGet(HttpRequest request, HttpResponse response) {
         String uri = request.getUri();
         if (uri.equals("/")) {
             uri = "/index.html"; // Ensure this is your landing page.
         } else if (uri.equals("/messages")) {
-            handleGetMessages(response);
-            return;
+            return handleGetMessages(response);
         }
+
         File file = new File(WEB_ROOT, uri);
-    
         if (file.exists() && !file.isDirectory()) {
-            serveFile(file, response);
+            return serveFile(file, response);
         } else {
-            handleNotFound(response);
+            return handleNotFound(response);
         }
     }
-    
-    private void handleGetMessages(HttpResponse response) {
-        List<Map<String, String>> messages = ResourceManager.getMessages();
-        StringBuilder json = new StringBuilder("[");
-        for (Map<String, String> message : messages) {
-            json.append("{")
-                .append("\"id\":").append(message.get("id")).append(",")
-                .append("\"user\":\"").append(message.get("user")).append("\",")
-                .append("\"message\":\"").append(message.get("message")).append("\",")
-                .append("\"timestamp\":\"").append(message.get("timestamp")).append("\"")
-                .append("},");
-        }
-        if (json.length() > 1) {
-            json.setLength(json.length() - 1); // Remove trailing comma
-        }
-        json.append("]");
-        
-        response.setStatus(HttpStatus.OK.getCode());
-        response.addHeader("Content-Type", "application/json");
-        response.setBody(json.toString());
+
+    private Mono<Void> handleGetMessages(HttpResponse response) {
+        return ResourceManager.getMessages()
+            .flatMap(messages -> {
+                StringBuilder json = new StringBuilder("[");
+                for (Map<String, String> message : messages) {
+                    json.append("{")
+                        .append("\"id\":").append(message.get("id")).append(",")
+                        .append("\"user\":\"").append(message.get("user")).append("\",")
+                        .append("\"message\":\"").append(message.get("message")).append("\",")
+                        .append("\"timestamp\":\"").append(message.get("timestamp")).append("\"")
+                        .append("},");
+                }
+                if (json.length() > 1) {
+                    json.setLength(json.length() - 1); // Remove trailing comma
+                }
+                json.append("]");
+                
+                response.setStatus(HttpStatus.OK.getCode());
+                response.addHeader("Content-Type", "application/json");
+                response.setBody(json.toString());
+                return Mono.empty();
+            });
     }
-    
-    private void serveFile(File file, HttpResponse response) {
-        try {
-            byte[] fileContent = Files.readAllBytes(file.toPath());
-            String contentType = getContentType(file.getName());
-            response.setStatus(HttpStatus.OK.getCode());
-            response.addHeader("Content-Type", contentType);
-            response.addHeader("Content-Length", String.valueOf(fileContent.length));
-            response.setBody(new String(fileContent, StandardCharsets.UTF_8));
-        } catch (IOException e) {
-            handleInternalServerError(response);
-        }
-    } 
-    
-    private void handlePost(HttpRequest request, HttpResponse response) {
+
+    private Mono<Void> serveFile(File file, HttpResponse response) {
+        return Mono.fromRunnable(() -> {
+            try {
+                byte[] fileContent = Files.readAllBytes(file.toPath());
+                String contentType = getContentType(file.getName());
+                response.setStatus(HttpStatus.OK.getCode());
+                response.addHeader("Content-Type", contentType);
+                response.addHeader("Content-Length", String.valueOf(fileContent.length));
+                response.setBody(new String(fileContent, StandardCharsets.UTF_8));
+            } catch (IOException e) {
+                handleInternalServerError(response).subscribe();
+            }
+        }).then();
+    }
+
+    private Mono<Void> handlePost(HttpRequest request, HttpResponse response) {
         if (request.getUri().equals("/messages")) {
             Map<String, String> formData = parseRequestBody(request.getBody());
             if (isValidPostData(formData)) {
-                boolean isCreated = ResourceManager.createMessage(formData);
-                if (isCreated) {
-                    response.setStatus(HttpStatus.CREATED.getCode());
-                    response.setBody("Message created successfully.");
-                } else {
-                    response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getCode());
-                    response.setBody("Failed to create message.");
-                }
+                return ResourceManager.createMessage(formData)
+                    .flatMap(isCreated -> {
+                        if (isCreated) {
+                            response.setStatus(HttpStatus.CREATED.getCode());
+                            response.setBody("Message created successfully.");
+                        } else {
+                            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getCode());
+                            response.setBody("Failed to create message.");
+                        }
+                        response.addHeader("Content-Type", "text/plain");
+                        return Mono.empty();
+                    });
             } else {
-                handleBadRequest(response);
-            }
-        } else {
-            response.setStatus(HttpStatus.NOT_FOUND.getCode());
-            response.setBody("Endpoint not found.");
-        }
-        response.addHeader("Content-Type", "text/plain");
-    }
-
-    private void handlePut(HttpRequest request, HttpResponse response) {
-        if (request.getUri().startsWith("/messages/")) {
-            String id = request.getUri().substring("/messages/".length());
-            Map<String, String> formData = parseRequestBody(request.getBody());
-            if (isValidPutData(formData)) {
-                boolean isUpdated = ResourceManager.updateMessage(id, formData);
-                if (isUpdated) {
-                    response.setStatus(HttpStatus.OK.getCode());
-                    response.setBody("Message updated successfully.");
-                } else {
-                    response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getCode());
-                    response.setBody("Failed to update message.");
-                }
-            } else {
-                handleBadRequest(response);
-            }
-        } else {
-            response.setStatus(HttpStatus.NOT_FOUND.getCode());
-            response.setBody("Endpoint not found.");
-        }
-        response.addHeader("Content-Type", "text/plain");
-    }
-
-    private void handleDelete(HttpRequest request, HttpResponse response) {
-        if (request.getUri().startsWith("/messages/")) {
-            String id = request.getUri().substring("/messages/".length());
-            boolean isDeleted = ResourceManager.deleteMessage(id);
-            if (isDeleted) {
-                response.setStatus(HttpStatus.NO_CONTENT.getCode());
-                response.setBody(""); // Empty body for No Content status
-            } else {
-                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getCode());
-                response.setBody("Failed to delete message.");
-                response.addHeader("Content-Type", "text/plain");
+                return handleBadRequest(response);
             }
         } else {
             response.setStatus(HttpStatus.NOT_FOUND.getCode());
             response.setBody("Endpoint not found.");
             response.addHeader("Content-Type", "text/plain");
+            return Mono.empty();
         }
     }
 
-    private void handleBadRequest(HttpResponse response) {
+    private Mono<Void> handlePut(HttpRequest request, HttpResponse response) {
+        if (request.getUri().startsWith("/messages/")) {
+            String id = request.getUri().substring("/messages/".length());
+            Map<String, String> formData = parseRequestBody(request.getBody());
+            if (isValidPutData(formData)) {
+                return ResourceManager.updateMessage(id, formData)
+                    .flatMap(isUpdated -> {
+                        if (isUpdated) {
+                            response.setStatus(HttpStatus.OK.getCode());
+                            response.setBody("Message updated successfully.");
+                        } else {
+                            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getCode());
+                            response.setBody("Failed to update message.");
+                        }
+                        response.addHeader("Content-Type", "text/plain");
+                        return Mono.empty();
+                    });
+            } else {
+                return handleBadRequest(response);
+            }
+        } else {
+            response.setStatus(HttpStatus.NOT_FOUND.getCode());
+            response.setBody("Endpoint not found.");
+            response.addHeader("Content-Type", "text/plain");
+            return Mono.empty();
+        }
+    }
+
+    private Mono<Void> handleDelete(HttpRequest request, HttpResponse response) {
+        if (request.getUri().startsWith("/messages/")) {
+            String id = request.getUri().substring("/messages/".length());
+            return ResourceManager.deleteMessage(id)
+                .flatMap(isDeleted -> {
+                    if (isDeleted) {
+                        response.setStatus(HttpStatus.NO_CONTENT.getCode());
+                        response.setBody(""); // Empty body for No Content status
+                    } else {
+                        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getCode());
+                        response.setBody("Failed to delete message.");
+                        response.addHeader("Content-Type", "text/plain");
+                    }
+                    return Mono.empty();
+                });
+        } else {
+            response.setStatus(HttpStatus.NOT_FOUND.getCode());
+            response.setBody("Endpoint not found.");
+            response.addHeader("Content-Type", "text/plain");
+            return Mono.empty();
+        }
+    }
+
+    private Mono<Void> handleBadRequest(HttpResponse response) {
         response.setStatus(HttpStatus.BAD_REQUEST.getCode());
         response.setBody("Bad Request");
         response.addHeader("Content-Type", "text/plain");
+        return Mono.empty();
     }
 
-    private void handleNotFound(HttpResponse response) {
+    private Mono<Void> handleNotFound(HttpResponse response) {
         response.setStatus(HttpStatus.NOT_FOUND.getCode());
         response.setBody("404 Not Found");
         response.addHeader("Content-Type", "text/plain");
+        return Mono.empty();
     }
 
-    private void handleInternalServerError(HttpResponse response) {
+    private Mono<Void> handleInternalServerError(HttpResponse response) {
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getCode());
         response.setBody("500 Internal Server Error");
         response.addHeader("Content-Type", "text/plain");
+        return Mono.empty();
     }
 
     private String getContentType(String fileName) {
