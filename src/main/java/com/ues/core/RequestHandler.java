@@ -5,15 +5,14 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.ues.database.ResourceManager;
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
 import com.ues.http.HttpStatus;
-import com.ues.http.HttpStatusMapping;
 
 public class RequestHandler {
 
@@ -41,18 +40,41 @@ public class RequestHandler {
     }
 
     private void handleGet(HttpRequest request, HttpResponse response) {
-        //handleResponse("GET", request, response);
-            String uri = request.getUri();
-            if (uri.equals("/")) {
-                uri = "/index.html"; // Ensure this is your landing page.
-            }
-            File file = new File(WEB_ROOT, uri);
+        String uri = request.getUri();
+        if (uri.equals("/")) {
+            uri = "/index.html"; // Ensure this is your landing page.
+        } else if (uri.equals("/messages")) {
+            handleGetMessages(response);
+            return;
+        }
+        File file = new File(WEB_ROOT, uri);
+    
+        if (file.exists() && !file.isDirectory()) {
+            serveFile(file, response);
+        } else {
+            handleNotFound(response);
+        }
+    }
+    
+    private void handleGetMessages(HttpResponse response) {
+        List<Map<String, String>> messages = ResourceManager.getMessages();
+        StringBuilder json = new StringBuilder("[");
+        for (Map<String, String> message : messages) {
+            json.append("{")
+                .append("\"id\":").append(message.get("id")).append(",")
+                .append("\"user\":\"").append(message.get("user")).append("\",")
+                .append("\"message\":\"").append(message.get("message")).append("\",")
+                .append("\"timestamp\":\"").append(message.get("timestamp")).append("\"")
+                .append("},");
+        }
+        if (json.length() > 1) {
+            json.setLength(json.length() - 1); // Remove trailing comma
+        }
+        json.append("]");
         
-            if (file.exists() && !file.isDirectory()) {
-                serveFile(file, response);
-            } else {
-                handleNotFound(response);
-            }
+        response.setStatus(HttpStatus.OK.getCode());
+        response.addHeader("Content-Type", "application/json");
+        response.setBody(json.toString());
     }
     
     private void serveFile(File file, HttpResponse response) {
@@ -62,27 +84,23 @@ public class RequestHandler {
             response.setStatus(HttpStatus.OK.getCode());
             response.addHeader("Content-Type", contentType);
             response.addHeader("Content-Length", String.valueOf(fileContent.length));
-            response.setBody(new String(fileContent, "UTF-8"));
+            response.setBody(new String(fileContent, StandardCharsets.UTF_8));
         } catch (IOException e) {
             handleInternalServerError(response);
         }
     } 
     
-
-    
     private void handlePost(HttpRequest request, HttpResponse response) {
-        //handleResponse("POST", request, response);
-        if (request.getUri().equals("/submit")) {
-        Map<String, String> formData = parseRequestBody(request.getBody());
-
+        if (request.getUri().equals("/messages")) {
+            Map<String, String> formData = parseRequestBody(request.getBody());
             if (isValidPostData(formData)) {
-                boolean isCreated = ResourceManager.createResource(formData);
+                boolean isCreated = ResourceManager.createMessage(formData);
                 if (isCreated) {
                     response.setStatus(HttpStatus.CREATED.getCode());
-                    response.setBody("Resource created successfully.");
+                    response.setBody("Message created successfully.");
                 } else {
                     response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getCode());
-                    response.setBody("Failed to create resource.");
+                    response.setBody("Failed to create message.");
                 }
             } else {
                 handleBadRequest(response);
@@ -95,11 +113,45 @@ public class RequestHandler {
     }
 
     private void handlePut(HttpRequest request, HttpResponse response) {
-        handleResponse("PUT", request, response);
+        if (request.getUri().startsWith("/messages/")) {
+            String id = request.getUri().substring("/messages/".length());
+            Map<String, String> formData = parseRequestBody(request.getBody());
+            if (isValidPutData(formData)) {
+                boolean isUpdated = ResourceManager.updateMessage(id, formData);
+                if (isUpdated) {
+                    response.setStatus(HttpStatus.OK.getCode());
+                    response.setBody("Message updated successfully.");
+                } else {
+                    response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getCode());
+                    response.setBody("Failed to update message.");
+                }
+            } else {
+                handleBadRequest(response);
+            }
+        } else {
+            response.setStatus(HttpStatus.NOT_FOUND.getCode());
+            response.setBody("Endpoint not found.");
+        }
+        response.addHeader("Content-Type", "text/plain");
     }
 
     private void handleDelete(HttpRequest request, HttpResponse response) {
-        handleResponse("DELETE", request, response);
+        if (request.getUri().startsWith("/messages/")) {
+            String id = request.getUri().substring("/messages/".length());
+            boolean isDeleted = ResourceManager.deleteMessage(id);
+            if (isDeleted) {
+                response.setStatus(HttpStatus.NO_CONTENT.getCode());
+                response.setBody(""); // Empty body for No Content status
+            } else {
+                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getCode());
+                response.setBody("Failed to delete message.");
+                response.addHeader("Content-Type", "text/plain");
+            }
+        } else {
+            response.setStatus(HttpStatus.NOT_FOUND.getCode());
+            response.setBody("Endpoint not found.");
+            response.addHeader("Content-Type", "text/plain");
+        }
     }
 
     private void handleBadRequest(HttpResponse response) {
@@ -108,18 +160,17 @@ public class RequestHandler {
         response.addHeader("Content-Type", "text/plain");
     }
 
-    private void handleResponse(String method, HttpRequest request, HttpResponse response) {
-        String uri = request.getUri();
-        HttpStatus status = HttpStatusMapping.STATUS_CODES.getOrDefault(uri, HttpStatus.BAD_REQUEST);
-        String responseBody = HttpStatusMapping.RESPONSE_BODIES.getOrDefault(uri, status.getReasonPhrase());
-
-        responseBody = method + " " + responseBody;
-
-        response.setStatus(status.getCode());
-        response.setBody(responseBody);
+    private void handleNotFound(HttpResponse response) {
+        response.setStatus(HttpStatus.NOT_FOUND.getCode());
+        response.setBody("404 Not Found");
         response.addHeader("Content-Type", "text/plain");
     }
 
+    private void handleInternalServerError(HttpResponse response) {
+        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getCode());
+        response.setBody("500 Internal Server Error");
+        response.addHeader("Content-Type", "text/plain");
+    }
 
     private String getContentType(String fileName) {
         if (fileName.endsWith(".html") || fileName.endsWith(".htm")) {
@@ -139,19 +190,6 @@ public class RequestHandler {
         }
     }
 
-    private void handleNotFound(HttpResponse response) {
-        response.setStatus(HttpStatus.NOT_FOUND.getCode());
-        response.setBody("404 Not Found");
-        response.addHeader("Content-Type", "text/plain");
-    }
-
-    private void handleInternalServerError(HttpResponse response) {
-        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getCode());
-        response.setBody("500 Internal Server Error");
-        response.addHeader("Content-Type", "text/plain");
-    }
-
-
     private Map<String, String> parseRequestBody(String body) {
         Map<String, String> postData = new HashMap<>();
         if (body != null && !body.isBlank()) {
@@ -163,7 +201,6 @@ public class RequestHandler {
                     String value = URLDecoder.decode(pair.substring(idx + 1), StandardCharsets.UTF_8.toString());
                     postData.put(key, value);
                 } catch (Exception e) {
-                    // Log error or handle exception as needed
                     e.printStackTrace();
                 }
             }
@@ -172,10 +209,11 @@ public class RequestHandler {
     }
 
     private boolean isValidPostData(Map<String, String> data) {
-
-        return data.containsKey("name") && !data.get("name").isBlank()
-            && data.containsKey("value") && !data.get("value").isBlank();
+        return data.containsKey("user") && !data.get("user").isBlank()
+            && data.containsKey("message") && !data.get("message").isBlank();
     }
 
-
+    private boolean isValidPutData(Map<String, String> data) {
+        return data.containsKey("message") && !data.get("message").isBlank();
+    }
 }
