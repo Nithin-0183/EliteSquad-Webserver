@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.ues.core.RequestHandler;
+import com.ues.database.DatabaseConfig;
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
 
@@ -19,6 +20,9 @@ public class NioHttpServer {
     private static final int PORT = 8080;
 
     public static void main(String[] args) {
+        // Initialize the database
+        DatabaseConfig.initializeDatabase();
+
         try {
             Selector selector = Selector.open();
             ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
