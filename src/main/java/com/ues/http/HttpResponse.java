@@ -1,5 +1,6 @@
 package com.ues.http;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,10 +31,16 @@ public class HttpResponse {
         for (Map.Entry<String, String> header : headers.entrySet()) {
             response.append(header.getKey()).append(": ").append(header.getValue()).append("\r\n");
         }
-        response.append("Content-Length: ").append(body.length()).append("\r\n");
+        if (body != null && !body.isEmpty()) {
+            response.append("Content-Length: ").append(body.getBytes(StandardCharsets.UTF_8).length).append("\r\n");
+        } else {
+            response.append("Content-Length: 0\r\n");
+        }
         response.append("\r\n");
-        response.append(body);
-        return response.toString().getBytes();
+        if (body != null && !body.isEmpty()) {
+            response.append(body);
+        }
+        return response.toString().getBytes(StandardCharsets.UTF_8);
     }
 
     private String getReasonPhrase(int statusCode) {

@@ -11,14 +11,19 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.ues.core.RequestHandler;
+import com.ues.database.DatabaseConfig;
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
+
+import reactor.core.publisher.Mono;
 
 public class NioHttpServer {
 
     private static final int PORT = 8080;
 
     public static void main(String[] args) {
+        DatabaseConfig.initializeDatabase();
+
         try {
             Selector selector = Selector.open();
             ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
@@ -75,15 +80,22 @@ public class NioHttpServer {
             HttpResponse response = new HttpResponse();
 
             RequestHandler handler = new RequestHandler();
-            handler.handleRequest(httpRequest, response);
+            Mono<Void> result = handler.handleRequest(httpRequest, response);
 
-            buffer.clear();
-            buffer.put(response.getResponseBytes());
-            buffer.flip();
-            while (buffer.hasRemaining()) {
-                socketChannel.write(buffer);
-            }
-            socketChannel.close();
+            result.doOnTerminate(() -> {
+                try {
+                    byte[] responseBytes = response.getResponseBytes();
+                    ByteBuffer responseBuffer = ByteBuffer.allocate(responseBytes.length);
+                    responseBuffer.put(responseBytes);
+                    responseBuffer.flip();
+                    while (responseBuffer.hasRemaining()) {
+                        socketChannel.write(responseBuffer);
+                    }
+                    socketChannel.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).subscribe();
         }
     }
 }
