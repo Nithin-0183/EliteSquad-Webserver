@@ -22,7 +22,6 @@ public class NioHttpServer {
     private static final int PORT = 8080;
 
     public static void main(String[] args) {
-        // Initialize the database
         DatabaseConfig.initializeDatabase();
 
         try {

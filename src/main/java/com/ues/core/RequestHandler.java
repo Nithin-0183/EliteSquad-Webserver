@@ -38,7 +38,7 @@ public class RequestHandler {
     private Mono<Void> handleGet(HttpRequest request, HttpResponse response) {
         String uri = request.getUri();
         if (uri.equals("/")) {
-            uri = "/index.html"; // Ensure this is your landing page.
+            uri = "/index.html";
         } else if (uri.equals("/messages")) {
             return handleGetMessages(response);
         }
@@ -64,7 +64,7 @@ public class RequestHandler {
                         .append("},");
                 }
                 if (json.length() > 1) {
-                    json.setLength(json.length() - 1); // Remove trailing comma
+                    json.setLength(json.length() - 1);
                 }
                 json.append("]");
                 
@@ -203,7 +203,7 @@ public class RequestHandler {
         } else if (fileName.endsWith(".gif")) {
             return "image/gif";
         } else {
-            return "text/plain";  // Default Content Type
+            return "text/plain";
         }
     }
 
@@ -233,4 +233,5 @@ public class RequestHandler {
     private boolean isValidPutData(Map<String, String> data) {
         return data.containsKey("message") && !data.get("message").isBlank();
     }
+    
 }
