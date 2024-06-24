@@ -27,16 +27,34 @@ function loadMessages() {
         .then(messages => {
             const chat = document.getElementById('chat');
             chat.innerHTML = '';
-            messages.forEach(msg => {
+            messages.reverse().forEach(msg => {
                 const messageElement = document.createElement('div');
                 messageElement.classList.add('border', 'p-2', 'mb-2');
+                messageElement.setAttribute('data-id', msg.id);
                 messageElement.innerHTML = `
                     <strong>${msg.user}</strong> <small>${msg.timestamp}</small>
                     <p>${msg.message}</p>
-                    <button class="btn btn-sm btn-warning" onclick="editMessage(${msg.id}, '${msg.message}')">Edit</button>
-                    <button class="btn btn-sm btn-danger" onclick="deleteMessage(${msg.id})">Delete</button>
+                    <button class="btn btn-sm btn-warning edit-button">Edit</button>
+                    <button class="btn btn-sm btn-danger delete-button">Delete</button>
                 `;
                 chat.appendChild(messageElement);
+            });
+
+            document.querySelectorAll('.edit-button').forEach(button => {
+                button.addEventListener('click', function () {
+                    const messageElement = this.parentElement;
+                    const id = messageElement.getAttribute('data-id');
+                    const oldMessage = messageElement.querySelector('p').innerText;
+                    editMessage(id, oldMessage);
+                });
+            });
+
+            document.querySelectorAll('.delete-button').forEach(button => {
+                button.addEventListener('click', function () {
+                    const messageElement = this.parentElement;
+                    const id = messageElement.getAttribute('data-id');
+                    deleteMessage(id);
+                });
             });
         });
 }
