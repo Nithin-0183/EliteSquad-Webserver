@@ -4,8 +4,11 @@ import com.ues.database.ResourceManager;
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
 import com.ues.http.HttpStatus;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -22,13 +25,16 @@ import static org.mockito.Mockito.*;
 
 class RequestHandlerTest {
 
-    private RequestHandler requestHandler;
-    private ResourceManager resourceManager;
+    private MockedStatic<ResourceManager> mockedStaticResourceManager;
 
     @BeforeEach
     void setUp() {
-        resourceManager = Mockito.mock(ResourceManager.class);
-        requestHandler = new RequestHandler(resourceManager);
+        mockedStaticResourceManager = Mockito.mockStatic(ResourceManager.class);
+    }
+
+    @AfterEach
+    void tearDown() {
+        mockedStaticResourceManager.close();
     }
 
     @Test
@@ -38,7 +44,7 @@ class RequestHandlerTest {
         when(request.getMethod()).thenReturn(HttpRequest.Method.GET);
         when(request.getUri()).thenReturn("/");
 
-        StepVerifier.create(requestHandler.handleRequest(request, response))
+        StepVerifier.create(RequestHandler.handleRequest(request, response))
                 .expectComplete()
                 .verify();
 
@@ -57,9 +63,9 @@ class RequestHandlerTest {
         when(request.getMethod()).thenReturn(HttpRequest.Method.POST);
         when(request.getUri()).thenReturn("/messages");
         when(request.getBody()).thenReturn("user=testUser&message=testMessage");
-        when(resourceManager.createMessage(any())).thenReturn(Mono.just(true));
+        mockedStaticResourceManager.when(() -> ResourceManager.createMessage(any())).thenReturn(Mono.just(true));
 
-        StepVerifier.create(requestHandler.handleRequest(request, response))
+        StepVerifier.create(RequestHandler.handleRequest(request, response))
                 .expectComplete()
                 .verify();
 
@@ -77,9 +83,9 @@ class RequestHandlerTest {
         when(request.getMethod()).thenReturn(HttpRequest.Method.PUT);
         when(request.getUri()).thenReturn("/messages/1");
         when(request.getBody()).thenReturn("message=updatedMessage");
-        when(resourceManager.updateMessage(eq("1"), any())).thenReturn(Mono.just(true));
+        mockedStaticResourceManager.when(() -> ResourceManager.updateMessage(eq("1"), any())).thenReturn(Mono.just(true));
 
-        StepVerifier.create(requestHandler.handleRequest(request, response))
+        StepVerifier.create(RequestHandler.handleRequest(request, response))
                 .expectComplete()
                 .verify();
 
@@ -94,9 +100,9 @@ class RequestHandlerTest {
 
         when(request.getMethod()).thenReturn(HttpRequest.Method.DELETE);
         when(request.getUri()).thenReturn("/messages/1");
-        when(resourceManager.deleteMessage("1")).thenReturn(Mono.just(true));
+        mockedStaticResourceManager.when(() -> ResourceManager.deleteMessage("1")).thenReturn(Mono.just(true));
 
-        StepVerifier.create(requestHandler.handleRequest(request, response))
+        StepVerifier.create(RequestHandler.handleRequest(request, response))
                 .expectComplete()
                 .verify();
 
@@ -111,11 +117,11 @@ class RequestHandlerTest {
 
         when(request.getMethod()).thenReturn(HttpRequest.Method.GET);
         when(request.getUri()).thenReturn("/messages");
-        when(resourceManager.getMessages()).thenReturn(Mono.just(List.of(
+        mockedStaticResourceManager.when(ResourceManager::getMessages).thenReturn(Mono.just(List.of(
                 Map.of("id", "1", "user", "testUser", "message", "testMessage", "timestamp", "2024-06-22T12:00:00")
         )));
 
-        StepVerifier.create(requestHandler.handleRequest(request, response))
+        StepVerifier.create(RequestHandler.handleRequest(request, response))
                 .expectComplete()
                 .verify();
 

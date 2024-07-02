@@ -21,7 +21,6 @@ import static org.mockito.Mockito.*;
 
 class ResourceManagerTest {
 
-    private ResourceManager resourceManager;
     private Connection connection;
     private PreparedStatement preparedStatement;
     private ResultSet resultSet;
@@ -29,13 +28,11 @@ class ResourceManagerTest {
 
     @BeforeEach
     void setUp() throws SQLException {
-        resourceManager = new ResourceManager();
-
         connection = Mockito.mock(Connection.class);
         preparedStatement = Mockito.mock(PreparedStatement.class);
         resultSet = Mockito.mock(ResultSet.class);
 
-        mockedStaticDatabaseConfig = Mockito.mockStatic(DatabaseConfig.class);
+        mockedStaticDatabaseConfig = Mockito.mockStatic(DatabaseConfig.class, Mockito.CALLS_REAL_METHODS);
         mockedStaticDatabaseConfig.when(DatabaseConfig::getConnection).thenReturn(connection);
     }
 
@@ -53,7 +50,7 @@ class ResourceManagerTest {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenReturn(1);
 
-        Mono<Boolean> result = resourceManager.createMessage(data);
+        Mono<Boolean> result = ResourceManager.createMessage(data);
 
         StepVerifier.create(result)
                 .expectNext(true)
@@ -73,7 +70,7 @@ class ResourceManagerTest {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenReturn(1);
 
-        Mono<Boolean> result = resourceManager.updateMessage("1", data);
+        Mono<Boolean> result = ResourceManager.updateMessage("1", data);
 
         StepVerifier.create(result)
                 .expectNext(true)
@@ -90,7 +87,7 @@ class ResourceManagerTest {
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenReturn(1);
 
-        Mono<Boolean> result = resourceManager.deleteMessage("1");
+        Mono<Boolean> result = ResourceManager.deleteMessage("1");
 
         StepVerifier.create(result)
                 .expectNext(true)
@@ -111,7 +108,7 @@ class ResourceManagerTest {
         when(resultSet.getString("message")).thenReturn("testMessage");
         when(resultSet.getString("timestamp")).thenReturn("2024-06-22T12:00:00");
 
-        Mono<List<Map<String, String>>> result = resourceManager.getMessages();
+        Mono<List<Map<String, String>>> result = ResourceManager.getMessages();
 
         StepVerifier.create(result)
                 .expectNextMatches(messages -> 
