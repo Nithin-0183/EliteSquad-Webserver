@@ -35,7 +35,7 @@ public class NioHttpServer {
             serverSocketChannel.configureBlocking(false);
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-            System.out.println("NIO Server is listening on port " + PORT);
+            System.out.println("Server is listening on port " + PORT);
 
             while (true) {
                 selector.select();
