@@ -4,8 +4,9 @@ import static org.mockito.Mockito.*;
 
 import java.io.PrintWriter;
 
-import org.junit.Before;
-import org.junit.Test;
+import com.ues.http.HttpResponse;
+import org.junit.*;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 public class HttpResponseTest {
