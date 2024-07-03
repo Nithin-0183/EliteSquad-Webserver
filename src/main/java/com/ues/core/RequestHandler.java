@@ -2,29 +2,28 @@ package com.ues.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.ues.database.ResourceManager;
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
 import com.ues.http.HttpStatus;
+import com.ues.database.ResourceManager;
 
 import reactor.core.publisher.Mono;
 
 public class RequestHandler {
 
     private static final String WEB_ROOT = "./WEB_ROOT";
-    private final ResourceManager resourceManager;
 
-    public RequestHandler(ResourceManager resourceManager) {
-        this.resourceManager = resourceManager;
+    private RequestHandler() {
+        // Private constructor to prevent instantiation
     }
 
-    public Mono<Void> handleRequest(HttpRequest request, HttpResponse response) {
+    public static Mono<Void> handleRequest(HttpRequest request, HttpResponse response) {
         String method = request.getMethod().toString();
         switch (method) {
             case "GET":
@@ -40,50 +39,28 @@ public class RequestHandler {
         }
     }
 
-    private Mono<Void> handleGet(HttpRequest request, HttpResponse response) {
+    private static Mono<Void> handleGet(HttpRequest request, HttpResponse response) {
         String uri = request.getUri();
         if (uri.equals("/")) {
             uri = "/index.html";
-        } else if (uri.equals("/messages")) {
-            return handleGetMessages(response);
         }
 
         File file = new File(WEB_ROOT, uri);
         if (file.exists() && !file.isDirectory()) {
-            return serveFile(file, response);
+            if (file.getName().endsWith(".php")) {
+                return executePhpScript(file, response);
+            } else {
+                return serveFile(file, response);
+            }
         } else {
             return handleNotFound(response);
         }
     }
 
-    private Mono<Void> handleGetMessages(HttpResponse response) {
-        return resourceManager.getMessages()
-            .flatMap(messages -> {
-                StringBuilder json = new StringBuilder("[");
-                for (Map<String, String> message : messages) {
-                    json.append("{")
-                        .append("\"id\":").append(message.get("id")).append(",")
-                        .append("\"user\":\"").append(message.get("user")).append("\",")
-                        .append("\"message\":\"").append(message.get("message")).append("\",")
-                        .append("\"timestamp\":\"").append(message.get("timestamp")).append("\"")
-                        .append("},");
-                }
-                if (json.length() > 1) {
-                    json.setLength(json.length() - 1);
-                }
-                json.append("]");
-                
-                response.setStatus(HttpStatus.OK.getCode());
-                response.addHeader("Content-Type", "application/json");
-                response.setBody(json.toString());
-                return Mono.empty();
-            });
-    }
-
-    private Mono<Void> serveFile(File file, HttpResponse response) {
+    private static Mono<Void> serveFile(File file, HttpResponse response) {
         return Mono.fromRunnable(() -> {
             try {
-                byte[] fileContent = Files.readAllBytes(file.toPath());
+                byte[] fileContent = java.nio.file.Files.readAllBytes(file.toPath());
                 String contentType = getContentType(file.getName());
                 response.setStatus(HttpStatus.OK.getCode());
                 response.addHeader("Content-Type", contentType);
@@ -95,11 +72,31 @@ public class RequestHandler {
         }).then();
     }
 
-    private Mono<Void> handlePost(HttpRequest request, HttpResponse response) {
+    private static Mono<Void> executePhpScript(File file, HttpResponse response) {
+        return Mono.fromRunnable(() -> {
+            try {
+                ProcessBuilder processBuilder = new ProcessBuilder("php", file.getAbsolutePath());
+                Process process = processBuilder.start();
+
+                InputStream inputStream = process.getInputStream();
+                byte[] output = inputStream.readAllBytes();
+
+                response.setStatus(HttpStatus.OK.getCode());
+                response.addHeader("Content-Type", "text/html");
+                response.setBody(new String(output, StandardCharsets.UTF_8));
+
+                process.waitFor();
+            } catch (IOException | InterruptedException e) {
+                handleInternalServerError(response).subscribe();
+            }
+        }).then();
+    }
+
+    private static Mono<Void> handlePost(HttpRequest request, HttpResponse response) {
         if (request.getUri().equals("/messages")) {
             Map<String, String> formData = parseRequestBody(request.getBody());
             if (isValidPostData(formData)) {
-                return resourceManager.createMessage(formData)
+                return ResourceManager.createMessage(formData)
                     .flatMap(isCreated -> {
                         if (isCreated) {
                             response.setStatus(HttpStatus.CREATED.getCode());
@@ -122,12 +119,12 @@ public class RequestHandler {
         }
     }
 
-    private Mono<Void> handlePut(HttpRequest request, HttpResponse response) {
+    private static Mono<Void> handlePut(HttpRequest request, HttpResponse response) {
         if (request.getUri().startsWith("/messages/")) {
             String id = request.getUri().substring("/messages/".length());
             Map<String, String> formData = parseRequestBody(request.getBody());
             if (isValidPutData(formData)) {
-                return resourceManager.updateMessage(id, formData)
+                return ResourceManager.updateMessage(id, formData)
                     .flatMap(isUpdated -> {
                         if (isUpdated) {
                             response.setStatus(HttpStatus.OK.getCode());
@@ -150,10 +147,10 @@ public class RequestHandler {
         }
     }
 
-    private Mono<Void> handleDelete(HttpRequest request, HttpResponse response) {
+    private static Mono<Void> handleDelete(HttpRequest request, HttpResponse response) {
         if (request.getUri().startsWith("/messages/")) {
             String id = request.getUri().substring("/messages/".length());
-            return resourceManager.deleteMessage(id)
+            return ResourceManager.deleteMessage(id)
                 .flatMap(isDeleted -> {
                     if (isDeleted) {
                         response.setStatus(HttpStatus.NO_CONTENT.getCode());
@@ -173,28 +170,28 @@ public class RequestHandler {
         }
     }
 
-    private Mono<Void> handleBadRequest(HttpResponse response) {
+    private static Mono<Void> handleBadRequest(HttpResponse response) {
         response.setStatus(HttpStatus.BAD_REQUEST.getCode());
         response.setBody("Bad Request");
         response.addHeader("Content-Type", "text/plain");
         return Mono.empty();
     }
 
-    private Mono<Void> handleNotFound(HttpResponse response) {
+    private static Mono<Void> handleNotFound(HttpResponse response) {
         response.setStatus(HttpStatus.NOT_FOUND.getCode());
         response.setBody("404 Not Found");
         response.addHeader("Content-Type", "text/plain");
         return Mono.empty();
     }
 
-    private Mono<Void> handleInternalServerError(HttpResponse response) {
+    private static Mono<Void> handleInternalServerError(HttpResponse response) {
         response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getCode());
         response.setBody("500 Internal Server Error");
         response.addHeader("Content-Type", "text/plain");
         return Mono.empty();
     }
 
-    private String getContentType(String fileName) {
+    private static String getContentType(String fileName) {
         if (fileName.endsWith(".html") || fileName.endsWith(".htm")) {
             return "text/html";
         } else if (fileName.endsWith(".css")) {
@@ -212,7 +209,7 @@ public class RequestHandler {
         }
     }
 
-    private Map<String, String> parseRequestBody(String body) {
+    private static Map<String, String> parseRequestBody(String body) {
         Map<String, String> postData = new HashMap<>();
         if (body != null && !body.isBlank()) {
             String[] pairs = body.split("&");
@@ -230,12 +227,12 @@ public class RequestHandler {
         return postData;
     }
 
-    private boolean isValidPostData(Map<String, String> data) {
+    private static boolean isValidPostData(Map<String, String> data) {
         return data.containsKey("user") && !data.get("user").isBlank()
             && data.containsKey("message") && !data.get("message").isBlank();
     }
 
-    private boolean isValidPutData(Map<String, String> data) {
+    private static boolean isValidPutData(Map<String, String> data) {
         return data.containsKey("message") && !data.get("message").isBlank();
     }
 }

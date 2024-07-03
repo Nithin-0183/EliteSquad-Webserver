@@ -12,7 +12,11 @@ import reactor.core.publisher.Mono;
 
 public class ResourceManager {
 
-    public Mono<Boolean> createMessage(Map<String, String> data) {
+    private ResourceManager() {
+        // Private constructor to prevent instantiation
+    }
+
+    public static Mono<Boolean> createMessage(Map<String, String> data) {
         return Mono.fromCallable(() -> {
             String sql = "INSERT INTO Messages (user, message) VALUES (?, ?)";
             try (Connection conn = DatabaseConfig.getConnection();
@@ -28,7 +32,7 @@ public class ResourceManager {
         }).defaultIfEmpty(false);
     }
 
-    public Mono<Boolean> updateMessage(String id, Map<String, String> data) {
+    public static Mono<Boolean> updateMessage(String id, Map<String, String> data) {
         return Mono.fromCallable(() -> {
             String sql = "UPDATE Messages SET message = ? WHERE id = ?";
             try (Connection conn = DatabaseConfig.getConnection();
@@ -44,7 +48,7 @@ public class ResourceManager {
         }).defaultIfEmpty(false);
     }
 
-    public Mono<Boolean> deleteMessage(String id) {
+    public static Mono<Boolean> deleteMessage(String id) {
         return Mono.fromCallable(() -> {
             String sql = "DELETE FROM Messages WHERE id = ?";
             try (Connection conn = DatabaseConfig.getConnection();
@@ -59,7 +63,7 @@ public class ResourceManager {
         }).defaultIfEmpty(false);
     }
 
-    public Mono<List<Map<String, String>>> getMessages() {
+    public static Mono<List<Map<String, String>>> getMessages() {
         return Mono.fromCallable(() -> {
             String sql = "SELECT * FROM Messages ORDER BY timestamp DESC";
             List<Map<String, String>> messages = new ArrayList<>();
