@@ -8,3 +8,12 @@ CREATE TABLE IF NOT EXISTS Messages (
     message TEXT NOT NULL,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS sites (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    domain VARCHAR(255) NOT NULL,
+    root VARCHAR(255) NOT NULL
+);
+
+INSERT INTO sites (domain, root) VALUES ('www.site1.com', '/var/www/site1');
+INSERT INTO sites (domain, root) VALUES ('www.site2.com', '/var/www/site2');

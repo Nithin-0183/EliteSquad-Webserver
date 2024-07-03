@@ -4,34 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a73840f9-ec5e-4566-853e-a9630e3058f1" name="Changes" comment="Added tests for HttpResponse class file use Mockito.">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/ChatController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/ChatMessage.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/ChatMessageRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/ChatService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/Notification.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/NotificationController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/NotificationRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/NotificationService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/SecurityController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/SecurityService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/User.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/UserController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/UserRegistrationDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/UserRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/UserServerApplication.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/UserService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/WebClientConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/WebSecurityConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02__Changes_.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02__Changes_1.xml" beforeDir="false" />
+    <list default="true" id="a73840f9-ec5e-4566-853e-a9630e3058f1" name="Changes" comment="Implemented ability to add and host more than one website.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WEB_ROOT/index.php" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apache_config.conf" beforeDir="false" afterPath="$PROJECT_DIR$/apache_config.conf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/Handler/RequestHandler.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/NioHttpServer.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/http/HttpRequest.java" beforeDir="false" />
@@ -39,13 +13,15 @@
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/http/HttpStatus.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/http/HttpStatusMapping.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/NioHttpServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ues/NioHttpServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/core/RequestHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ues/core/RequestHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/http/HttpRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ues/http/HttpRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/http/HttpResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ues/http/HttpResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/example/HttpResponseTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/example/HttpResponseTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/NioHttpServer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/core/RequestHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/database/DatabaseConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/database/ResourceManager.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/http/HttpRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/http/HttpResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/http/HttpStatus.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/http/HttpStatusMapping.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/init.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/init.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -309,7 +285,7 @@
       <workItem from="1718632789888" duration="6316000" />
       <workItem from="1719133015853" duration="414000" />
       <workItem from="1719136888472" duration="2667000" />
-      <workItem from="1720012132566" duration="8708000" />
+      <workItem from="1720012132566" duration="9685000" />
     </task>
     <task id="LOCAL-00001" summary="Initial code for webserver">
       <option name="closed" value="true" />
@@ -367,7 +343,15 @@
       <option name="project" value="LOCAL" />
       <updated>1718966282678</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Implemented ability to add and host more than one website.">
+      <option name="closed" value="true" />
+      <created>1720037586478</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1720037586478</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -382,6 +366,17 @@
               <RecentGroup>
                 <option name="FILTER_VALUES">
                   <option value="origin/Chungman-Lee" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+        <entry key="User">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="*" />
                 </option>
               </RecentGroup>
             </list>
@@ -416,6 +411,18 @@
     <MESSAGE value="Added GET, POST, PUT and DELETE functions." />
     <MESSAGE value="Modified GET, POST, PUT and DELETE functions to run on custom and not using default spring server." />
     <MESSAGE value="Added tests for HttpResponse class file use Mockito." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added tests for HttpResponse class file use Mockito." />
+    <MESSAGE value="Implemented ability to add and host more than one website." />
+    <option name="LAST_COMMIT_MESSAGE" value="Implemented ability to add and host more than one website." />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/ues/NioHttpServer.java</url>
+          <line>41</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
