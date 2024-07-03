@@ -2,16 +2,16 @@ package com.ues.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.ues.database.ResourceManager;
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
 import com.ues.http.HttpStatus;
+import com.ues.database.ResourceManager;
 
 import reactor.core.publisher.Mono;
 
@@ -43,52 +43,50 @@ public class RequestHandler {
         String uri = request.getUri();
         if (uri.equals("/")) {
             uri = "/index.html";
-        } else if (uri.equals("/messages")) {
-            return handleGetMessages(response);
         }
 
         File file = new File(WEB_ROOT, uri);
         if (file.exists() && !file.isDirectory()) {
-            return serveFile(file, response);
+            if (file.getName().endsWith(".php")) {
+                return executePhpScript(file, response);
+            } else {
+                return serveFile(file, response);
+            }
         } else {
             return handleNotFound(response);
         }
     }
 
-    private static Mono<Void> handleGetMessages(HttpResponse response) {
-        return ResourceManager.getMessages()
-            .flatMap(messages -> {
-                StringBuilder json = new StringBuilder("[");
-                for (Map<String, String> message : messages) {
-                    json.append("{")
-                        .append("\"id\":").append(message.get("id")).append(",")
-                        .append("\"user\":\"").append(message.get("user")).append("\",")
-                        .append("\"message\":\"").append(message.get("message")).append("\",")
-                        .append("\"timestamp\":\"").append(message.get("timestamp")).append("\"")
-                        .append("},");
-                }
-                if (json.length() > 1) {
-                    json.setLength(json.length() - 1);
-                }
-                json.append("]");
-                
-                response.setStatus(HttpStatus.OK.getCode());
-                response.addHeader("Content-Type", "application/json");
-                response.setBody(json.toString());
-                return Mono.empty();
-            });
-    }
-
     private static Mono<Void> serveFile(File file, HttpResponse response) {
         return Mono.fromRunnable(() -> {
             try {
-                byte[] fileContent = Files.readAllBytes(file.toPath());
+                byte[] fileContent = java.nio.file.Files.readAllBytes(file.toPath());
                 String contentType = getContentType(file.getName());
                 response.setStatus(HttpStatus.OK.getCode());
                 response.addHeader("Content-Type", contentType);
                 response.addHeader("Content-Length", String.valueOf(fileContent.length));
                 response.setBody(new String(fileContent, StandardCharsets.UTF_8));
             } catch (IOException e) {
+                handleInternalServerError(response).subscribe();
+            }
+        }).then();
+    }
+
+    private static Mono<Void> executePhpScript(File file, HttpResponse response) {
+        return Mono.fromRunnable(() -> {
+            try {
+                ProcessBuilder processBuilder = new ProcessBuilder("php", file.getAbsolutePath());
+                Process process = processBuilder.start();
+
+                InputStream inputStream = process.getInputStream();
+                byte[] output = inputStream.readAllBytes();
+
+                response.setStatus(HttpStatus.OK.getCode());
+                response.addHeader("Content-Type", "text/html");
+                response.setBody(new String(output, StandardCharsets.UTF_8));
+
+                process.waitFor();
+            } catch (IOException | InterruptedException e) {
                 handleInternalServerError(response).subscribe();
             }
         }).then();
