@@ -15,5 +15,5 @@ CREATE TABLE IF NOT EXISTS sites (
     root VARCHAR(255) NOT NULL
 );
 
-INSERT INTO sites (domain, root) VALUES ('www.site1.com', '/var/www/site1');
-INSERT INTO sites (domain, root) VALUES ('www.site2.com', '/var/www/site2');
+INSERT INTO sites (domain, root) VALUES ('www.site1.com', '/WEB_ROOT/site1');
+INSERT INTO sites (domain, root) VALUES ('www.site2.com', '/WEB_ROOT/site2');

@@ -4,8 +4,7 @@ import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
 import reactor.core.publisher.Mono;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -30,7 +29,7 @@ public class RequestHandler {
 
             String path = request.getPath();
             if ("/".equals(path)) {
-                path = "/index.html"; // Default to index.html for the root path
+                path = "/index.php"; // Default to index.php for the root path
             }
 
             File file = new File(rootDir, path);
@@ -38,7 +37,11 @@ public class RequestHandler {
                 send404(response);
             } else {
                 try {
-                    sendResponse(file, response);
+                    if (file.getName().endsWith(".php")) {
+                        executePhp(file, response);
+                    } else {
+                        sendResponse(file, response);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -62,5 +65,25 @@ public class RequestHandler {
         response.setReasonPhrase("OK");
         response.setHeaders(Map.of("Content-Type", contentType));
         response.setBody(content);
+    }
+
+    private void executePhp(File file, HttpResponse response) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder("php-cgi", file.getPath());
+        Process process = pb.start();
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        try (InputStream inputStream = process.getInputStream()) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, length);
+            }
+        }
+
+        String contentType = "text/html"; // Default to text/html for PHP output
+        response.setStatusCode(200);
+        response.setReasonPhrase("OK");
+        response.setHeaders(Map.of("Content-Type", contentType));
+        response.setBody(outputStream.toByteArray());
     }
 }

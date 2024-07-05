@@ -6,22 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="a73840f9-ec5e-4566-853e-a9630e3058f1" name="Changes" comment="Implemented ability to add and host more than one website.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/Handler/RequestHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/NioHttpServer.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/http/HttpRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/http/HttpResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/http/HttpStatus.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/http/HttpStatusMapping.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/index.html" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/NioHttpServer.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/core/RequestHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/database/DatabaseConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/database/ResourceManager.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/http/HttpRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/http/HttpResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/http/HttpStatus.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/http/HttpStatusMapping.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache_config.conf" beforeDir="false" afterPath="$PROJECT_DIR$/apache_config.conf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/core/RequestHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ues/core/RequestHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/init.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/init.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,18 +37,18 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "hiteshunnamucd"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;hiteshunnamucd&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Nithin-0183/EliteSquad-Webserver.git",
-    "accountId": "8bb9e082-5d44-479e-85df-afa003e6dcee"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Nithin-0183/EliteSquad-Webserver.git&quot;,
+    &quot;accountId&quot;: &quot;8bb9e082-5d44-479e-85df-afa003e6dcee&quot;
   }
-}]]></component>
+}</component>
   <component name="KubernetesApiProvider">{
   &quot;configuredContexts&quot;: [
     {
@@ -82,49 +71,49 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "Application.NioHttpServer.executor": "Run",
-    "Application.SimpleHttpServer.executor": "Run",
-    "Application.com.example.http.NioHttpServer.executor": "Run",
-    "Application.com.ues.NioHttpServer.executor": "Run",
-    "DefaultHtmlFileTemplate": "HTML File",
-    "JUnit.HttpRequestTest.executor": "Run",
-    "JUnit.HttpRequestTest.testGetRequest.executor": "Run",
-    "JUnit.HttpRequestTest.testInvalidRequestLine.executor": "Run",
-    "JUnit.HttpRequestTest.testMissingMethodInRequestLine.executor": "Run",
-    "JUnit.HttpRequestTest.testParseBody_InvalidContentLength.executor": "Run",
-    "JUnit.HttpRequestTest.testPostRequestWithBody.executor": "Run",
-    "JUnit.HttpRequestTest.testUnrecognizedMethod.executor": "Run",
-    "JUnit.HttpResponseTest.executor": "Run",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "Spring Boot.DemoApplication (1).executor": "Run",
-    "Spring Boot.DemoApplication.executor": "Run",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit3",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit3": "junit.framework.TestCase",
-    "git-widget-placeholder": "Hitesh",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/unnam/OneDrive/Desktop/java-WebServer-master",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "run.configurations.included.in.services": "true",
-    "settings.editor.selected.configurable": "reference.settings.project.maven.repository.indices",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;Application.NioHttpServer.executor&quot;: &quot;Run&quot;,
+    &quot;Application.SimpleHttpServer.executor&quot;: &quot;Run&quot;,
+    &quot;Application.com.example.http.NioHttpServer.executor&quot;: &quot;Run&quot;,
+    &quot;Application.com.ues.NioHttpServer.executor&quot;: &quot;Run&quot;,
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;JUnit.HttpRequestTest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HttpRequestTest.testGetRequest.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HttpRequestTest.testInvalidRequestLine.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HttpRequestTest.testMissingMethodInRequestLine.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HttpRequestTest.testParseBody_InvalidContentLength.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HttpRequestTest.testPostRequestWithBody.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HttpRequestTest.testUnrecognizedMethod.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.HttpResponseTest.executor&quot;: &quot;Run&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Spring Boot.DemoApplication (1).executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.DemoApplication.executor&quot;: &quot;Run&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit3&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit3&quot;: &quot;junit.framework.TestCase&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Hitesh&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/unnam/OneDrive/Desktop/java-WebServer-master&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.maven.repository.indices&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateTestDialog.Recents.Supers">
       <recent name="junit.framework.TestCase" />
@@ -285,7 +274,8 @@
       <workItem from="1718632789888" duration="6316000" />
       <workItem from="1719133015853" duration="414000" />
       <workItem from="1719136888472" duration="2667000" />
-      <workItem from="1720012132566" duration="9685000" />
+      <workItem from="1720012132566" duration="11694000" />
+      <workItem from="1720186873610" duration="2541000" />
     </task>
     <task id="LOCAL-00001" summary="Initial code for webserver">
       <option name="closed" value="true" />
@@ -351,7 +341,23 @@
       <option name="project" value="LOCAL" />
       <updated>1720037586478</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="Implemented ability to add and host more than one website.">
+      <option name="closed" value="true" />
+      <created>1720038529050</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1720038529050</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Implemented ability to add and host more than one website.">
+      <option name="closed" value="true" />
+      <created>1720038551369</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1720038551369</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -413,16 +419,5 @@
     <MESSAGE value="Added tests for HttpResponse class file use Mockito." />
     <MESSAGE value="Implemented ability to add and host more than one website." />
     <option name="LAST_COMMIT_MESSAGE" value="Implemented ability to add and host more than one website." />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/ues/NioHttpServer.java</url>
-          <line>41</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
