@@ -1,37 +1,41 @@
 package com.ues;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import com.ues.core.RequestHandler;
 import com.ues.database.DatabaseConfig;
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
-
 import reactor.core.publisher.Mono;
 
 public class NioHttpServer {
 
     private static final int PORT = 8080;
+    private static Map<String, String> domainToRootMap = new HashMap<>();
 
     public static void main(String[] args) {
         DatabaseConfig.initializeDatabase();
-
         try {
+            loadConfiguration();
+
             Selector selector = Selector.open();
             ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
             serverSocketChannel.bind(new InetSocketAddress(PORT));
             serverSocketChannel.configureBlocking(false);
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-            System.out.println("NIO Server is listening on port " + PORT);
+            System.out.println("Server is listening on port " + PORT);
 
             while (true) {
                 selector.select();
@@ -50,9 +54,17 @@ public class NioHttpServer {
                     keyIterator.remove();
                 }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void loadConfiguration() throws IOException {
+        Properties properties = new Properties();
+        try (InputStream input = new FileInputStream("src/main/resources/application.properties")) {
+            properties.load(input);
+            domainToRootMap.put(properties.getProperty("site1.domain"), properties.getProperty("site1.root"));
+            domainToRootMap.put(properties.getProperty("site2.domain"), properties.getProperty("site2.root"));
         }
     }
 
@@ -79,11 +91,13 @@ public class NioHttpServer {
             HttpRequest httpRequest = new HttpRequest(request);
             HttpResponse response = new HttpResponse();
 
-            Mono<Void> result = RequestHandler.handleRequest(httpRequest, response);
+            RequestHandler requestHandler = new RequestHandler(domainToRootMap);
+            Mono<Void> result = requestHandler.handle(httpRequest, response);
 
             result.doOnTerminate(() -> {
-                try {
-                    byte[] responseBytes = response.getResponseBytes();
+                try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+                    response.write(byteArrayOutputStream);
+                    byte[] responseBytes = byteArrayOutputStream.toByteArray();
                     ByteBuffer responseBuffer = ByteBuffer.allocate(responseBytes.length);
                     responseBuffer.put(responseBytes);
                     responseBuffer.flip();
