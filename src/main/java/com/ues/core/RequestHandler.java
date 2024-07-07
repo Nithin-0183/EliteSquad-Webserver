@@ -32,7 +32,7 @@ public class RequestHandler {
 
             String path = request.getPath();
             if ("/".equals(path)) {
-                path = "/index.php"; // Default to index.php for the root path
+                path = "/index.html";
             }
 
             File file = new File(rootDir, path);
@@ -41,20 +41,20 @@ public class RequestHandler {
                 sink.success();
             } else if (file.isDirectory()) {
                 sendMultipleResponses(file, response)
-                    .doOnTerminate(sink::success)
-                    .subscribeOn(Schedulers.boundedElastic())
-                    .subscribe();
+                        .doOnTerminate(sink::success)
+                        .subscribeOn(Schedulers.boundedElastic())
+                        .subscribe();
             } else {
                 if (file.getName().endsWith(".php")) {
                     executePhp(file, response)
-                        .doOnTerminate(sink::success)
-                        .subscribeOn(Schedulers.boundedElastic())
-                        .subscribe();
+                            .doOnTerminate(sink::success)
+                            .subscribeOn(Schedulers.boundedElastic())
+                            .subscribe();
                 } else {
                     sendResponse(file, response)
-                        .doOnTerminate(sink::success)
-                        .subscribeOn(Schedulers.boundedElastic())
-                        .subscribe();
+                            .doOnTerminate(sink::success)
+                            .subscribeOn(Schedulers.boundedElastic())
+                            .subscribe();
                 }
             }
         });
@@ -113,19 +113,19 @@ public class RequestHandler {
         return Flux.defer(() -> {
             try (Stream<Path> paths = Files.list(directory.toPath())) {
                 return Flux.fromStream(paths)
-                    .flatMap(path -> Mono.fromRunnable(() -> {
-                        try {
-                            String contentType = Files.probeContentType(path);
-                            byte[] content = Files.readAllBytes(path);
+                        .flatMap(path -> Mono.fromRunnable(() -> {
+                            try {
+                                String contentType = Files.probeContentType(path);
+                                byte[] content = Files.readAllBytes(path);
 
-                            response.setStatusCode(200);
-                            response.setReasonPhrase("OK");
-                            response.setHeaders(Map.of("Content-Type", contentType));
-                            response.setBody(content);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }));
+                                response.setStatusCode(200);
+                                response.setReasonPhrase("OK");
+                                response.setHeaders(Map.of("Content-Type", contentType));
+                                response.setBody(content);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }));
             } catch (IOException e) {
                 return Flux.error(e);
             }
