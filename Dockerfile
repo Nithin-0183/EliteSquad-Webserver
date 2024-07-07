@@ -6,6 +6,9 @@ RUN a2enmod rewrite
 # Copy custom Apache configuration
 COPY apache_config.conf /etc/apache2/sites-available/000-default.conf
 
+# Enable the site configuration
+RUN a2ensite 000-default
+
 # Set the working directory
 WORKDIR /var/www
 
