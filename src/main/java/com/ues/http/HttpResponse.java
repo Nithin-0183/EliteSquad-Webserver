@@ -1,62 +1,49 @@
 package com.ues.http;
 
-import java.nio.charset.StandardCharsets; // 추가된 import
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 public class HttpResponse {
 
     private int statusCode;
-    private String body;
+    private String reasonPhrase;
     private Map<String, String> headers = new HashMap<>();
+    private byte[] body;
 
-    public HttpResponse() {
-    }
-
-    public void setStatus(int statusCode) {
+    public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
     }
 
-    public void setBody(String body) {
+    public void setReasonPhrase(String reasonPhrase) {
+        this.reasonPhrase = reasonPhrase;
+    }
+
+    public void setHeaders(Map<String, String> headers) {
+        this.headers.putAll(headers);
+    }
+
+    public void setBody(byte[] body) {
         this.body = body;
-    }
-
-    public void addHeader(String name, String value) {
-        headers.put(name, value);
-    }
-
-    public int getStatusCode() {
-        return statusCode;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public Map<String, String> getHeaders() {
-        return headers;
     }
 
     public byte[] getResponseBytes() {
         StringBuilder response = new StringBuilder();
-        response.append("HTTP/1.1 ").append(statusCode).append(" ").append(getReasonPhrase(statusCode)).append("\r\n");
-        for (Map.Entry<String, String> header : headers.entrySet()) {
-            response.append(header.getKey()).append(": ").append(header.getValue()).append("\r\n");
-        }
-        if (body != null && !body.isEmpty()) {
-            response.append("Content-Length: ").append(body.getBytes(StandardCharsets.UTF_8).length).append("\r\n");
-        } else {
-            response.append("Content-Length: 0\r\n");
-        }
+        response.append("HTTP/1.1 ").append(statusCode).append(" ").append(reasonPhrase).append("\r\n");
+        headers.forEach((key, value) -> response.append(key).append(": ").append(value).append("\r\n"));
         response.append("\r\n");
-        if (body != null && !body.isEmpty()) {
-            response.append(body);
-        }
-        return response.toString().getBytes(StandardCharsets.UTF_8);
+
+        byte[] headerBytes = response.toString().getBytes();
+        byte[] responseBytes = new byte[headerBytes.length + body.length];
+
+        System.arraycopy(headerBytes, 0, responseBytes, 0, headerBytes.length);
+        System.arraycopy(body, 0, responseBytes, headerBytes.length, body.length);
+
+        return responseBytes;
     }
 
-    private String getReasonPhrase(int statusCode) {
-        HttpStatus status = HttpStatus.fromCode(statusCode);
-        return status.getReasonPhrase();
+    public void write(OutputStream outputStream) throws IOException {
+        outputStream.write(getResponseBytes());
     }
 }

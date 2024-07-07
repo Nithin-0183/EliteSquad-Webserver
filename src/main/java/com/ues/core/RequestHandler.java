@@ -1,238 +1,134 @@
 package com.ues.core;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
-import com.ues.http.HttpStatus;
-import com.ues.database.ResourceManager;
-
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Map;
+import java.util.stream.Stream;
 
 public class RequestHandler {
 
-    private static final String WEB_ROOT = "./WEB_ROOT";
+    private final Map<String, String> domainToRootMap;
 
-    private RequestHandler() {
-        // Private constructor to prevent instantiation
+    public RequestHandler(Map<String, String> domainToRootMap) {
+        this.domainToRootMap = domainToRootMap;
     }
 
-    public static Mono<Void> handleRequest(HttpRequest request, HttpResponse response) {
-        String method = request.getMethod().toString();
-        switch (method) {
-            case "GET":
-                return handleGet(request, response);
-            case "POST":
-                return handlePost(request, response);
-            case "PUT":
-                return handlePut(request, response);
-            case "DELETE":
-                return handleDelete(request, response);
-            default:
-                return handleBadRequest(response);
-        }
-    }
+    public Mono<Void> handle(HttpRequest request, HttpResponse response) {
+        return Mono.create(sink -> {
+            String host = request.getHeader("Host");
+            String rootDir = domainToRootMap.get(host);
+            if (rootDir == null) {
+                send404(response);
+                sink.success();
+                return;
+            }
 
-    private static Mono<Void> handleGet(HttpRequest request, HttpResponse response) {
-        String uri = request.getUri();
-        if (uri.equals("/")) {
-            uri = "/index.html";
-        }
+            String path = request.getPath();
+            if ("/".equals(path)) {
+                path = "/index.php"; // Default to index.php for the root path
+            }
 
-        File file = new File(WEB_ROOT, uri);
-        if (file.exists() && !file.isDirectory()) {
-            if (file.getName().endsWith(".php")) {
-                return executePhpScript(file, response);
+            File file = new File(rootDir, path);
+            if (!file.exists()) {
+                send404(response);
+                sink.success();
+            } else if (file.isDirectory()) {
+                sendMultipleResponses(file, response)
+                    .doOnTerminate(sink::success)
+                    .subscribeOn(Schedulers.boundedElastic())
+                    .subscribe();
             } else {
-                return serveFile(file, response);
-            }
-        } else {
-            return handleNotFound(response);
-        }
-    }
-
-    private static Mono<Void> serveFile(File file, HttpResponse response) {
-        return Mono.fromRunnable(() -> {
-            try {
-                byte[] fileContent = java.nio.file.Files.readAllBytes(file.toPath());
-                String contentType = getContentType(file.getName());
-                response.setStatus(HttpStatus.OK.getCode());
-                response.addHeader("Content-Type", contentType);
-                response.addHeader("Content-Length", String.valueOf(fileContent.length));
-                response.setBody(new String(fileContent, StandardCharsets.UTF_8));
-            } catch (IOException e) {
-                handleInternalServerError(response).subscribe();
-            }
-        }).then();
-    }
-
-    private static Mono<Void> executePhpScript(File file, HttpResponse response) {
-        return Mono.fromRunnable(() -> {
-            try {
-                ProcessBuilder processBuilder = new ProcessBuilder("php", file.getAbsolutePath());
-                Process process = processBuilder.start();
-
-                InputStream inputStream = process.getInputStream();
-                byte[] output = inputStream.readAllBytes();
-
-                response.setStatus(HttpStatus.OK.getCode());
-                response.addHeader("Content-Type", "text/html");
-                response.setBody(new String(output, StandardCharsets.UTF_8));
-
-                process.waitFor();
-            } catch (IOException | InterruptedException e) {
-                handleInternalServerError(response).subscribe();
-            }
-        }).then();
-    }
-
-    private static Mono<Void> handlePost(HttpRequest request, HttpResponse response) {
-        if (request.getUri().equals("/messages")) {
-            Map<String, String> formData = parseRequestBody(request.getBody());
-            if (isValidPostData(formData)) {
-                return ResourceManager.createMessage(formData)
-                    .flatMap(isCreated -> {
-                        if (isCreated) {
-                            response.setStatus(HttpStatus.CREATED.getCode());
-                            response.setBody("Message created successfully.");
-                        } else {
-                            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getCode());
-                            response.setBody("Failed to create message.");
-                        }
-                        response.addHeader("Content-Type", "text/plain");
-                        return Mono.empty();
-                    });
-            } else {
-                return handleBadRequest(response);
-            }
-        } else {
-            response.setStatus(HttpStatus.NOT_FOUND.getCode());
-            response.setBody("Endpoint not found.");
-            response.addHeader("Content-Type", "text/plain");
-            return Mono.empty();
-        }
-    }
-
-    private static Mono<Void> handlePut(HttpRequest request, HttpResponse response) {
-        if (request.getUri().startsWith("/messages/")) {
-            String id = request.getUri().substring("/messages/".length());
-            Map<String, String> formData = parseRequestBody(request.getBody());
-            if (isValidPutData(formData)) {
-                return ResourceManager.updateMessage(id, formData)
-                    .flatMap(isUpdated -> {
-                        if (isUpdated) {
-                            response.setStatus(HttpStatus.OK.getCode());
-                            response.setBody("Message updated successfully.");
-                        } else {
-                            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getCode());
-                            response.setBody("Failed to update message.");
-                        }
-                        response.addHeader("Content-Type", "text/plain");
-                        return Mono.empty();
-                    });
-            } else {
-                return handleBadRequest(response);
-            }
-        } else {
-            response.setStatus(HttpStatus.NOT_FOUND.getCode());
-            response.setBody("Endpoint not found.");
-            response.addHeader("Content-Type", "text/plain");
-            return Mono.empty();
-        }
-    }
-
-    private static Mono<Void> handleDelete(HttpRequest request, HttpResponse response) {
-        if (request.getUri().startsWith("/messages/")) {
-            String id = request.getUri().substring("/messages/".length());
-            return ResourceManager.deleteMessage(id)
-                .flatMap(isDeleted -> {
-                    if (isDeleted) {
-                        response.setStatus(HttpStatus.NO_CONTENT.getCode());
-                        response.setBody(""); // Empty body for No Content status
-                    } else {
-                        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getCode());
-                        response.setBody("Failed to delete message.");
-                        response.addHeader("Content-Type", "text/plain");
-                    }
-                    return Mono.empty();
-                });
-        } else {
-            response.setStatus(HttpStatus.NOT_FOUND.getCode());
-            response.setBody("Endpoint not found.");
-            response.addHeader("Content-Type", "text/plain");
-            return Mono.empty();
-        }
-    }
-
-    private static Mono<Void> handleBadRequest(HttpResponse response) {
-        response.setStatus(HttpStatus.BAD_REQUEST.getCode());
-        response.setBody("Bad Request");
-        response.addHeader("Content-Type", "text/plain");
-        return Mono.empty();
-    }
-
-    private static Mono<Void> handleNotFound(HttpResponse response) {
-        response.setStatus(HttpStatus.NOT_FOUND.getCode());
-        response.setBody("404 Not Found");
-        response.addHeader("Content-Type", "text/plain");
-        return Mono.empty();
-    }
-
-    private static Mono<Void> handleInternalServerError(HttpResponse response) {
-        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.getCode());
-        response.setBody("500 Internal Server Error");
-        response.addHeader("Content-Type", "text/plain");
-        return Mono.empty();
-    }
-
-    private static String getContentType(String fileName) {
-        if (fileName.endsWith(".html") || fileName.endsWith(".htm")) {
-            return "text/html";
-        } else if (fileName.endsWith(".css")) {
-            return "text/css";
-        } else if (fileName.endsWith(".js")) {
-            return "application/javascript";
-        } else if (fileName.endsWith(".png")) {
-            return "image/png";
-        } else if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
-            return "image/jpeg";
-        } else if (fileName.endsWith(".gif")) {
-            return "image/gif";
-        } else {
-            return "text/plain";
-        }
-    }
-
-    private static Map<String, String> parseRequestBody(String body) {
-        Map<String, String> postData = new HashMap<>();
-        if (body != null && !body.isBlank()) {
-            String[] pairs = body.split("&");
-            for (String pair : pairs) {
-                int idx = pair.indexOf("=");
-                try {
-                    String key = URLDecoder.decode(pair.substring(0, idx), StandardCharsets.UTF_8.toString());
-                    String value = URLDecoder.decode(pair.substring(idx + 1), StandardCharsets.UTF_8.toString());
-                    postData.put(key, value);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (file.getName().endsWith(".php")) {
+                    executePhp(file, response)
+                        .doOnTerminate(sink::success)
+                        .subscribeOn(Schedulers.boundedElastic())
+                        .subscribe();
+                } else {
+                    sendResponse(file, response)
+                        .doOnTerminate(sink::success)
+                        .subscribeOn(Schedulers.boundedElastic())
+                        .subscribe();
                 }
             }
-        }
-        return postData;
+        });
     }
 
-    private static boolean isValidPostData(Map<String, String> data) {
-        return data.containsKey("user") && !data.get("user").isBlank()
-            && data.containsKey("message") && !data.get("message").isBlank();
+    private void send404(HttpResponse response) {
+        response.setStatusCode(404);
+        response.setReasonPhrase("Not Found");
+        response.setHeaders(Map.of("Content-Type", "text/html"));
+        response.setBody("<h1>404 Not Found</h1>".getBytes());
     }
 
-    private static boolean isValidPutData(Map<String, String> data) {
-        return data.containsKey("message") && !data.get("message").isBlank();
+    private Mono<Void> sendResponse(File file, HttpResponse response) {
+        return Mono.fromRunnable(() -> {
+            try {
+                String contentType = Files.probeContentType(file.toPath());
+                byte[] content = Files.readAllBytes(file.toPath());
+
+                response.setStatusCode(200);
+                response.setReasonPhrase("OK");
+                response.setHeaders(Map.of("Content-Type", contentType));
+                response.setBody(content);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private Mono<Void> executePhp(File file, HttpResponse response) {
+        return Mono.fromRunnable(() -> {
+            try {
+                ProcessBuilder pb = new ProcessBuilder("php-cgi", file.getPath());
+                Process process = pb.start();
+
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                try (InputStream inputStream = process.getInputStream()) {
+                    byte[] buffer = new byte[1024];
+                    int length;
+                    while ((length = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, length);
+                    }
+                }
+
+                String contentType = "text/html"; // Default to text/html for PHP output
+                response.setStatusCode(200);
+                response.setReasonPhrase("OK");
+                response.setHeaders(Map.of("Content-Type", contentType));
+                response.setBody(outputStream.toByteArray());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private Flux<Void> sendMultipleResponses(File directory, HttpResponse response) {
+        return Flux.defer(() -> {
+            try (Stream<Path> paths = Files.list(directory.toPath())) {
+                return Flux.fromStream(paths)
+                    .flatMap(path -> Mono.fromRunnable(() -> {
+                        try {
+                            String contentType = Files.probeContentType(path);
+                            byte[] content = Files.readAllBytes(path);
+
+                            response.setStatusCode(200);
+                            response.setReasonPhrase("OK");
+                            response.setHeaders(Map.of("Content-Type", contentType));
+                            response.setBody(content);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }));
+            } catch (IOException e) {
+                return Flux.error(e);
+            }
+        });
     }
 }
