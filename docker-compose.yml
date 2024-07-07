@@ -2,7 +2,6 @@ version: '3'
 
 services:
   web:
-
     build: .
     container_name: webserver
     volumes:
@@ -33,16 +32,6 @@ services:
       - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-
-    image: your-apache-php-image
-    container_name: webserver
-    volumes:
-      - ./WEB_ROOT/site1:/var/www/site1
-      - ./WEB_ROOT/site2:/var/www/site2
-      - ./apache_config.conf:/etc/apache2/sites-available/000-default.conf
-    ports:
-      - "80:80"
-
     networks:
       - webnet
 
