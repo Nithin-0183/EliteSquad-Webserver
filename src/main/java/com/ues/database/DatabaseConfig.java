@@ -32,7 +32,7 @@ public class DatabaseConfig {
 
     public static void initializeDatabase() {
         try (Connection conn = getConnection();
-             Statement stmt = conn.createStatement()) {
+            Statement stmt = conn.createStatement()) {
 
             // Read SQL file from resources directory
             InputStream inputStream = DatabaseConfig.class.getClassLoader().getResourceAsStream("init.sql");
