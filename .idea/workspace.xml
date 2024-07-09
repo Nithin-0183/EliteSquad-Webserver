@@ -4,15 +4,31 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a73840f9-ec5e-4566-853e-a9630e3058f1" name="Changes" comment="Implemented ability to add and host more than one website.">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02__Changes_1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02__Changes_1.xml" afterDir="false" />
+    <list default="true" id="a73840f9-ec5e-4566-853e-a9630e3058f1" name="Changes" comment="Fixed the docker-compose.yml and apache_config.conf files.">
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/ChatController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/ChatMessage.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/ChatMessageRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/ChatService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/Notification.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/NotificationController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/NotificationRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/NotificationService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/SecurityController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/SecurityService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/User.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/UserController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/UserRegistrationDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/UserRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/UserServerApplication.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/UserService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/WebClientConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/WebSecurityConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02__Changes_1.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apache_config.conf" beforeDir="false" afterPath="$PROJECT_DIR$/apache_config.conf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/core/RequestHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ues/core/RequestHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/init.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/init.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WEB_ROOT/site1/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/WEB_ROOT/site1/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WEB_ROOT/site1/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/WEB_ROOT/site1/index.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/WEB_ROOT/site2/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/WEB_ROOT/site2/index.php" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,12 +61,22 @@
     &quot;assignee&quot;: &quot;hiteshunnamucd&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Nithin-0183/EliteSquad-Webserver.git&quot;,
-    &quot;accountId&quot;: &quot;8bb9e082-5d44-479e-85df-afa003e6dcee&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Nithin-0183/EliteSquad-Webserver.git",
+    "accountId": "8bb9e082-5d44-479e-85df-afa003e6dcee"
+  },
+  "recentNewPullRequestHead": {
+    "server": {
+      "useHttp": false,
+      "host": "github.com",
+      "port": null,
+      "suffix": null
+    },
+    "owner": "Nithin-0183",
+    "repository": "EliteSquad-Webserver"
   }
-}</component>
+}]]></component>
   <component name="KubernetesApiProvider">{
   &quot;configuredContexts&quot;: [
     {
@@ -61,6 +87,7 @@
   ],
   &quot;isMigrated&quot;: true
 }</component>
+  <component name="PhpDebugGeneral" listening_started="true" />
   <component name="PhpWorkspaceProjectConfiguration" interpreter_name="PHP" />
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
@@ -103,7 +130,7 @@
     "Spring Boot.DemoApplication.executor": "Run",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit3",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit3": "junit.framework.TestCase",
-    "git-widget-placeholder": "Hitesh",
+    "git-widget-placeholder": "#17 on Hitesh",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/unnam/OneDrive/Desktop/java-WebServer-master",
     "node.js.detected.package.eslint": "true",
@@ -355,7 +382,15 @@
       <option name="project" value="LOCAL" />
       <updated>1720038551369</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Fixed the docker-compose.yml and apache_config.conf files.">
+      <option name="closed" value="true" />
+      <created>1720347519512</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1720347519512</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -416,6 +451,7 @@
     <MESSAGE value="Modified GET, POST, PUT and DELETE functions to run on custom and not using default spring server." />
     <MESSAGE value="Added tests for HttpResponse class file use Mockito." />
     <MESSAGE value="Implemented ability to add and host more than one website." />
-    <option name="LAST_COMMIT_MESSAGE" value="Implemented ability to add and host more than one website." />
+    <MESSAGE value="Fixed the docker-compose.yml and apache_config.conf files." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed the docker-compose.yml and apache_config.conf files." />
   </component>
 </project>
