@@ -10,6 +10,10 @@ public class HttpRequest {
     private String version;
     private Map<String, String> headers = new HashMap<>();
 
+    public HttpRequest(){
+        
+    }
+
     public HttpRequest(String request) {
         String[] lines = request.split("\r\n");
         String[] requestLine = lines[0].split(" ");

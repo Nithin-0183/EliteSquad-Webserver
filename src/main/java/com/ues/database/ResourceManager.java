@@ -12,8 +12,8 @@ import reactor.core.publisher.Mono;
 
 public class ResourceManager {
 
-    private ResourceManager() {
-        // Private constructor to prevent instantiation
+    public ResourceManager() {
+        // Later convert this to Singleton
     }
 
     public static Mono<Boolean> createMessage(Map<String, String> data) {

@@ -36,7 +36,7 @@ public class RequestHandler {
             if ("/".equals(path)) {
                 path = "/index.html";
             }
-
+            System.out.println("rootDir="+rootDir+" path= "+path);
             File file = new File(rootDir, path);
             if (!file.exists()) {
                 send404(response);
