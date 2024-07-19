@@ -19,13 +19,13 @@ import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
 import reactor.core.publisher.Mono;
 
-public class NioHttpServer {
+public class NioHttpServer implements Runnable{
 
     private static final int PORT = 8080;
     private static Map<String, String> domainToRootMap = new HashMap<>();
 
-    public static void main(String[] args) {
-        DatabaseConfig.initializeDatabase();
+    public void run() {
+//        DatabaseConfig.initializeDatabase();
         try {
             loadConfiguration();
 

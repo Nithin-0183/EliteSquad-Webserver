@@ -15,10 +15,10 @@ import com.ues.core.RequestHandler;
 import com.ues.database.DatabaseConfig;
 import com.ues.database.ResourceManager;
 
-public class SecureServer  {
+public class SecureServer implements Runnable{
     private static Map<String, String> domainToRootMap = new HashMap<>();
-    public static void main (String args[]) {
-        DatabaseConfig.initializeDatabase();
+    public void run () {
+//        DatabaseConfig.initializeDatabase();
         
         try {
             loadConfiguration();
