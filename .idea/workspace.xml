@@ -5,30 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a73840f9-ec5e-4566-853e-a9630e3058f1" name="Changes" comment="Fixed the docker-compose.yml and apache_config.conf files.">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/ChatController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/ChatMessage.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/ChatMessageRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/ChatService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/Notification.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/NotificationController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/NotificationRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/NotificationService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/SecurityController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/SecurityService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/User.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/UserController.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/UserRegistrationDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/UserRepository.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/UserServerApplication.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/UserService.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/WebClientConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/WebSecurityConfig.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02_[Changes]1/shelved.patch" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_23-06-2024_11_02__Changes_1.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WEB_ROOT/site1/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/WEB_ROOT/site1/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WEB_ROOT/site1/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/WEB_ROOT/site1/index.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/WEB_ROOT/site2/index.php" beforeDir="false" afterPath="$PROJECT_DIR$/WEB_ROOT/site2/index.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apache_config.conf" beforeDir="false" afterPath="$PROJECT_DIR$/apache_config.conf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/NioHttpServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ues/NioHttpServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/SSLConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ues/SSLConfiguration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/core/RequestHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ues/core/RequestHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/database/DatabaseConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ues/database/DatabaseConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/demo-0.0.1-SNAPSHOT.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/demo-0.0.1-SNAPSHOT.jar.original" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-archiver/pom.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,16 +33,16 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="JUnit3 Test Class" />
         <option value="HTML File" />
+        <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="Hitesh" />
+        <entry key="$PROJECT_DIR$" value="Nithin-23200183" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -61,22 +53,22 @@
     &quot;assignee&quot;: &quot;hiteshunnamucd&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Nithin-0183/EliteSquad-Webserver.git",
-    "accountId": "8bb9e082-5d44-479e-85df-afa003e6dcee"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Nithin-0183/EliteSquad-Webserver.git&quot;,
+    &quot;accountId&quot;: &quot;8bb9e082-5d44-479e-85df-afa003e6dcee&quot;
   },
-  "recentNewPullRequestHead": {
-    "server": {
-      "useHttp": false,
-      "host": "github.com",
-      "port": null,
-      "suffix": null
+  &quot;recentNewPullRequestHead&quot;: {
+    &quot;server&quot;: {
+      &quot;useHttp&quot;: false,
+      &quot;host&quot;: &quot;github.com&quot;,
+      &quot;port&quot;: null,
+      &quot;suffix&quot;: null
     },
-    "owner": "Nithin-0183",
-    "repository": "EliteSquad-Webserver"
+    &quot;owner&quot;: &quot;Nithin-0183&quot;,
+    &quot;repository&quot;: &quot;EliteSquad-Webserver&quot;
   }
-}]]></component>
+}</component>
   <component name="KubernetesApiProvider">{
   &quot;configuredContexts&quot;: [
     {
@@ -103,6 +95,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
+    "Application.MainServer.executor": "Run",
     "Application.NioHttpServer.executor": "Run",
     "Application.SimpleHttpServer.executor": "Run",
     "Application.com.example.http.NioHttpServer.executor": "Run",
@@ -130,7 +123,7 @@
     "Spring Boot.DemoApplication.executor": "Run",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit3",
     "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit3": "junit.framework.TestCase",
-    "git-widget-placeholder": "#17 on Hitesh",
+    "git-widget-placeholder": "Hitesh",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/unnam/OneDrive/Desktop/java-WebServer-master",
     "node.js.detected.package.eslint": "true",
@@ -150,6 +143,9 @@
     <key name="CreateTestDialog.Recents.Supers">
       <recent name="junit.framework.TestCase" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\unnam\IdeaProjects\EliteSquad-Webserver" />
+    </key>
     <key name="CreateTestDialog.RecentsKey">
       <recent name="com.example" />
     </key>
@@ -163,9 +159,9 @@
       </set>
     </option>
   </component>
-  <component name="RunManager" selected="Docker.Dockerfile">
-    <configuration name="com.ues.NioHttpServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.ues.NioHttpServer" />
+  <component name="RunManager" selected="Application.MainServer">
+    <configuration name="MainServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.ues.MainServer" />
       <module name="demo" />
       <extension name="coverage">
         <pattern>
@@ -177,17 +173,15 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="HttpResponseTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="com.ues.NioHttpServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.ues.NioHttpServer" />
       <module name="demo" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.example.*" />
+          <option name="PATTERN" value="com.ues.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
-      <option name="PACKAGE_NAME" value="com.example" />
-      <option name="MAIN_CLASS_NAME" value="com.example.HttpResponseTest" />
-      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -242,11 +236,15 @@
       <method v="2" />
     </configuration>
     <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
-      <deployment type="docker-compose.yml" />
+      <deployment type="docker-compose.yml">
+        <settings />
+      </deployment>
       <method v="2" />
     </configuration>
     <configuration default="true" type="docker-deploy" factoryName="dockerfile" temporary="true">
-      <deployment type="dockerfile" />
+      <deployment type="dockerfile">
+        <settings />
+      </deployment>
       <method v="2" />
     </configuration>
     <configuration name="docker-compose.yml: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
@@ -272,11 +270,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.MainServer" />
         <item itemvalue="Docker.Dockerfile" />
         <item itemvalue="Application.com.ues.NioHttpServer" />
         <item itemvalue="Docker.docker-compose.yml: Compose Deployment" />
         <item itemvalue="Docker.docker-compose.yml.traefik: Compose Deployment" />
-        <item itemvalue="JUnit.HttpResponseTest" />
       </list>
     </recent_temporary>
   </component>

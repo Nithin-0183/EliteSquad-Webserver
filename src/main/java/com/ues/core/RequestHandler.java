@@ -25,8 +25,11 @@ public class RequestHandler {
     public Mono<Void> handle(HttpRequest request, HttpResponse response) {
         return Mono.create(sink -> {
             String host = request.getHeader("Host");
+            host = host.substring(0, host.indexOf(":"));
+            System.out.println("host = " + host);
             String rootDir = domainToRootMap.get(host);
             if (rootDir == null) {
+                System.out.println("rootDir is null, hence sending 404");
                 send404(response);
                 sink.success();
                 return;
@@ -34,9 +37,9 @@ public class RequestHandler {
 
             String path = request.getPath();
             if ("/".equals(path)) {
-                path = "/index.html";
+                path = "/index.php";
             }
-
+            System.out.println("rootDir="+rootDir+" path= "+path);
             File file = new File(rootDir, path);
             if (!file.exists()) {
                 send404(response);
@@ -66,7 +69,7 @@ public class RequestHandler {
         response.setStatusCode(404);
         response.setReasonPhrase("Not Found");
         response.setHeaders(Map.of("Content-Type", "text/html"));
-        response.setBody("<h1>404 Not Found</h1>".getBytes());
+        response.setBody("<h1>404 Not Found.</h1>".getBytes());
     }
 
     private Mono<Void> sendResponse(File file, HttpResponse response) {
