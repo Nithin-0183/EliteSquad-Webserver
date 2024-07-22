@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.security.KeyStore;
 
 public class SSLConfiguration {
-    private static final String KEYSTORE_PATH = "src/main/resources/keystore.jks";
+    private static final String KEYSTORE_PATH = "C:\\Users\\unnam\\IdeaProjects\\EliteSquad-Webserver\\keystore.jks";
     private static final String KEYSTORE_PASSWORD = "Text@0987"; // Consider using environment variables or a secure config file
 
     public static SSLServerSocketFactory getServerSocketFactory() throws Exception {

@@ -66,7 +66,7 @@ public class RequestHandler {
         response.setStatusCode(404);
         response.setReasonPhrase("Not Found");
         response.setHeaders(Map.of("Content-Type", "text/html"));
-        response.setBody("<h1>404 Not Found</h1>".getBytes());
+        response.setBody("<h1>404 Not Found My Ass.</h1>".getBytes());
     }
 
     private Mono<Void> sendResponse(File file, HttpResponse response) {

@@ -1,21 +1,23 @@
-FROM php:8.1-apache
-
-# Enable Apache mods
-RUN a2enmod rewrite ssl
-
-# Copy custom Apache configuration
-COPY apache_config.conf /etc/apache2/sites-available/000-default.conf
-
-# Copy SSL certificates
-COPY certfile.cer /etc/apache2/ssl/certfile.cer
-COPY keystore.jks /etc/apache2/ssl/keystore.jks
+# Use an OpenJDK base image for Java 17
+FROM openjdk:17-jdk-slim
 
 # Set the working directory
-WORKDIR /var/www
+WORKDIR /app
 
-# Copy project files into the container
-COPY WEB_ROOT /var/www
+# Copy the Java application JAR file into the container
+COPY target/elitesquad-webserver-0.0.1-SNAPSHOT.jar /app/elitesquad-webserver-0.0.1-SNAPSHOT.jar
+
+# Copy the JKS file into the container
+COPY keystore.jks /etc/ssl/keystore.jks
+
+# Copy the script to update /etc/hosts
+COPY update-hosts.sh /app/update-hosts.sh
+RUN chmod +x /app/update-hosts.sh
 
 # Expose ports 80 and 443
 EXPOSE 80 443
 
+# Run the script and the Java application
+# ENTRYPOINT ["/bin/sh", "-c", "/app/update-hosts.sh && java -jar /app/elitesquad-webserver-0.0.1-SNAPSHOT.jar"]
+
+CMD ["tail", "-f", "/dev/null"]

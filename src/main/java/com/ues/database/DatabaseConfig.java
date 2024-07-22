@@ -24,9 +24,9 @@ public class DatabaseConfig {
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(
-            properties.getProperty("db.url"),
-            properties.getProperty("db.user"),
-            properties.getProperty("db.password")
+            properties.getProperty("spring.datasource.url"),
+            properties.getProperty("spring.datasource.username"),
+            properties.getProperty("spring.datasource.password")
         );
     }
 
