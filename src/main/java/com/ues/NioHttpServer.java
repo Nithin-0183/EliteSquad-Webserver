@@ -14,7 +14,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import com.ues.core.RequestHandler;
-//import com.ues.database.DatabaseConfig;
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
 import reactor.core.publisher.Mono;
@@ -25,7 +24,7 @@ public class NioHttpServer implements Runnable{
     private static Map<String, String> domainToRootMap = new HashMap<>();
 
     public void run() {
-//        DatabaseConfig.initializeDatabase();
+
         try {
             loadConfiguration();
 
@@ -61,10 +60,11 @@ public class NioHttpServer implements Runnable{
 
     private static void loadConfiguration() throws IOException {
         Properties properties = new Properties();
-        try (InputStream input = new FileInputStream("src/main/resources/application.properties")) {
+        try (InputStream input = NioHttpServer.class.getClassLoader().getResourceAsStream("application.properties")) {
             properties.load(input);
             domainToRootMap.put(properties.getProperty("site1.domain"), properties.getProperty("site1.root"));
             domainToRootMap.put(properties.getProperty("site2.domain"), properties.getProperty("site2.root"));
+            System.out.println(domainToRootMap.toString());
         }
     }
 
