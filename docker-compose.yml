@@ -1,21 +1,21 @@
 version: '3.8'
 
 services:
-  # mysql:
-  #   image: mysql:8.0
-  #   container_name: mysql
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: root
-  #     MYSQL_DATABASE: mydatabase
-  #   ports:
-  #     - "3307:3306"  # Exposing MySQL container's port 3306 to host's port 3307
-  #   healthcheck:
-  #     test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 3
-  #   networks:
-  #     - webnet
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mydatabase
+    ports:
+      - "3307:3306"  # Exposing MySQL container's port 3306 to host's port 3307
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - webnet
 
   myapp:
     build: .
@@ -28,16 +28,14 @@ services:
       - SITE1_ROOT=/app/WEB_ROOT/site1
       - SITE2_DOMAIN=site2.local
       - SITE2_ROOT=/app/WEB_ROOT/site2
-      # - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/mydatabase
-      # - SPRING_DATASOURCE_USERNAME=root
-      # - SPRING_DATASOURCE_PASSWORD=root
-      # - DATABASE_URL=jdbc:mysql://mysql:3306/mydatabase?useSSL=false&serverTimezone=UTC
-    # depends_on:
-    #   mysql:
-    #     condition: service_healthy
+      - DB.URL=jdbc:mysql://mysql:3306/mydatabase
+      - DB.USERNAME=root
+      - DB.PASSWORD=root
+    depends_on:
+      mysql:
+        condition: service_healthy
     networks:
       - webnet
-
 
 networks:
   webnet:
