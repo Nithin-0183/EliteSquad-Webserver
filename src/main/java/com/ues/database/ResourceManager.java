@@ -1,87 +1,116 @@
 package com.ues.database;
 
+import reactor.core.publisher.Mono;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import reactor.core.publisher.Mono;
+import java.util.*;
 
 public class ResourceManager {
 
     public ResourceManager() {
-        // Later convert this to Singleton
     }
 
-    public static Mono<Boolean> createMessage(Map<String, String> data) {
+    public static Mono<Boolean> createData(String tableName, Map<String, String> data) {
         return Mono.fromCallable(() -> {
-            String sql = "INSERT INTO Messages (user, message) VALUES (?, ?)";
-            try (Connection conn = DatabaseConfig.getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, data.get("user"));
-                stmt.setString(2, data.get("message"));
-                int result = stmt.executeUpdate();
-                return result > 0;
+            StringBuilder sql = new StringBuilder("INSERT INTO ").append(tableName).append(" (");
+            StringBuilder placeholders = new StringBuilder("VALUES (");
+
+            for (String key : data.keySet()) {
+                sql.append(key).append(",");
+                placeholders.append("?,");
+            }
+
+            sql.setLength(sql.length() - 1); // Remove last comma
+            placeholders.setLength(placeholders.length() - 1); // Remove last comma
+
+            sql.append(") ").append(placeholders).append(")");
+
+            try (Connection connection = DatabaseConfig.getConnection();
+                 PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+
+                int index = 1;
+                for (String value : data.values()) {
+                    statement.setString(index++, value);
+                }
+
+                statement.executeUpdate();
+                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
                 return false;
             }
-        }).defaultIfEmpty(false);
+        });
     }
 
-    public static Mono<Boolean> updateMessage(String id, Map<String, String> data) {
+    public static Mono<Boolean> updateData(String tableName, Map<String, String> data, String condition) {
         return Mono.fromCallable(() -> {
-            String sql = "UPDATE Messages SET message = ? WHERE id = ?";
-            try (Connection conn = DatabaseConfig.getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setString(1, data.get("message"));
-                stmt.setInt(2, Integer.parseInt(id));
-                int result = stmt.executeUpdate();
-                return result > 0;
+            StringBuilder sql = new StringBuilder("UPDATE ").append(tableName).append(" SET ");
+
+            for (String key : data.keySet()) {
+                sql.append(key).append(" = ?,");
+            }
+
+            sql.setLength(sql.length() - 1); // Remove last comma
+            sql.append(" WHERE ").append(condition);
+
+            try (Connection connection = DatabaseConfig.getConnection();
+                 PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+
+                int index = 1;
+                for (String value : data.values()) {
+                    statement.setString(index++, value);
+                }
+
+                statement.executeUpdate();
+                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
                 return false;
             }
-        }).defaultIfEmpty(false);
+        });
     }
 
-    public static Mono<Boolean> deleteMessage(String id) {
+    public static Mono<Boolean> deleteData(String tableName, String condition) {
         return Mono.fromCallable(() -> {
-            String sql = "DELETE FROM Messages WHERE id = ?";
-            try (Connection conn = DatabaseConfig.getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, Integer.parseInt(id));
-                int result = stmt.executeUpdate();
-                return result > 0;
+            String sql = "DELETE FROM " + tableName + " WHERE " + condition;
+
+            try (Connection connection = DatabaseConfig.getConnection();
+                 PreparedStatement statement = connection.prepareStatement(sql)) {
+
+                statement.executeUpdate();
+                return true;
             } catch (SQLException e) {
                 e.printStackTrace();
                 return false;
             }
-        }).defaultIfEmpty(false);
+        });
     }
 
-    public static Mono<List<Map<String, String>>> getMessages() {
+    public static Mono<List<Map<String, String>>> getData(String tableName, String condition) {
         return Mono.fromCallable(() -> {
-            String sql = "SELECT * FROM Messages ORDER BY timestamp DESC";
-            List<Map<String, String>> messages = new ArrayList<>();
-            try (Connection conn = DatabaseConfig.getConnection();
-                 PreparedStatement stmt = conn.prepareStatement(sql);
-                 ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    messages.add(Map.of(
-                        "id", String.valueOf(rs.getInt("id")),
-                        "user", rs.getString("user"),
-                        "message", rs.getString("message"),
-                        "timestamp", rs.getString("timestamp")
-                    ));
+            List<Map<String, String>> result = new ArrayList<>();
+            String sql = "SELECT * FROM " + tableName + " WHERE " + condition;
+
+            try (Connection connection = DatabaseConfig.getConnection();
+                 PreparedStatement statement = connection.prepareStatement(sql);
+                 ResultSet resultSet = statement.executeQuery()) {
+
+                int columnCount = resultSet.getMetaData().getColumnCount();
+                while (resultSet.next()) {
+                    Map<String, String> row = new HashMap<>();
+                    for (int i = 1; i <= columnCount; i++) {
+                        row.put(resultSet.getMetaData().getColumnName(i), resultSet.getString(i));
+                    }
+                    result.add(row);
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            return messages;
-        }).defaultIfEmpty(new ArrayList<>());
+
+            return result;
+        });
     }
 }
