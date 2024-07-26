@@ -21,10 +21,11 @@ public class PutRequestHandler {
                     if (success) {
                         response.setStatusCode(HttpStatus.OK.getCode());
                         response.setReasonPhrase(HttpStatus.OK.getReasonPhrase());
+                        return Mono.empty();
                     } else {
                         send500(response, "Failed to update data");
+                        return Mono.empty();
                     }
-                    return Mono.empty();
                 });
     }
 
@@ -33,7 +34,9 @@ public class PutRequestHandler {
         String[] pairs = body.split("&");
         for (String pair : pairs) {
             String[] keyValue = pair.split("=");
-            data.put(keyValue[0], keyValue[1]);
+            if (keyValue.length == 2) {
+                data.put(keyValue[0], keyValue[1]);
+            }
         }
         return data;
     }

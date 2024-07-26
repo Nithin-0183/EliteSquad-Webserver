@@ -2,6 +2,7 @@ package com.ues.core;
 
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
+import com.ues.http.HttpStatus;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
@@ -40,8 +41,8 @@ public class RequestHandler {
     }
 
     private void send405(HttpResponse response) {
-        response.setStatusCode(405);
-        response.setReasonPhrase("Method Not Allowed");
+        response.setStatusCode(HttpStatus.METHOD_NOT_ALLOWED.getCode());
+        response.setReasonPhrase(HttpStatus.METHOD_NOT_ALLOWED.getReasonPhrase());
         response.setHeaders(Map.of("Content-Type", "application/json"));
         response.setBody("{\"error\":\"Method Not Allowed\"}".getBytes());
     }

@@ -22,7 +22,11 @@ public class DeleteRequestHandler {
                     } else {
                         send500(response, "Failed to delete data");
                     }
-                    return Mono.empty();
+                    return Mono.<Void>empty();
+                })
+                .onErrorResume(e -> {
+                    send500(response, e.getMessage());
+                    return Mono.<Void>empty();
                 });
     }
 

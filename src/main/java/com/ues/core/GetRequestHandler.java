@@ -44,23 +44,23 @@ public class GetRequestHandler {
 
             if (!file.exists()) {
                 handleApiRequest(path, response)
-                        .doOnTerminate(sink::success)
+                        .then(Mono.fromRunnable(sink::success))
                         .subscribeOn(Schedulers.boundedElastic())
                         .subscribe();
             } else if (file.isDirectory()) {
                 sendMultipleResponses(file, response)
-                        .doOnTerminate(sink::success)
+                        .then(Mono.fromRunnable(sink::success))
                         .subscribeOn(Schedulers.boundedElastic())
                         .subscribe();
             } else {
                 if (file.getName().endsWith(".php")) {
                     executePhp(file, response)
-                            .doOnTerminate(sink::success)
+                            .then(Mono.fromRunnable(sink::success))
                             .subscribeOn(Schedulers.boundedElastic())
                             .subscribe();
                 } else {
                     sendResponse(file, response)
-                            .doOnTerminate(sink::success)
+                            .then(Mono.fromRunnable(sink::success))
                             .subscribeOn(Schedulers.boundedElastic())
                             .subscribe();
                 }
@@ -68,21 +68,19 @@ public class GetRequestHandler {
         });
     }
 
-    private Mono<Void> handleApiRequest(String path, HttpResponse response) {
+    protected Mono<Void> handleApiRequest(String path, HttpResponse response) {
         return ResourceManager.getData("api_responses", "path = '" + path + "'")
-                .flatMap(dataList -> {
-                    if (dataList.isEmpty()) {
-                        send404(response);
-                        return Mono.empty();
-                    }
-
-                    Map<String, String> data = dataList.get(0);
-                    return sendJsonResponse(response, data);
-                })
+                .flatMapMany(Flux::fromIterable)
+                .switchIfEmpty(Mono.defer(() -> {
+                    send404(response);
+                    return Mono.empty();
+                }))
+                .flatMap(data -> sendJsonResponse(response, data))
                 .onErrorResume(e -> {
                     send500(response, e.getMessage());
                     return Mono.empty();
-                });
+                })
+                .then();
     }
 
     private Mono<Void> sendJsonResponse(HttpResponse response, Map<String, String> data) {
@@ -114,7 +112,7 @@ public class GetRequestHandler {
         response.setBody(("<h1>500 Internal Server Error</h1><p>" + message + "</p>").getBytes());
     }
 
-    private Mono<Void> sendResponse(File file, HttpResponse response) {
+    protected Mono<Void> sendResponse(File file, HttpResponse response) {
         return Mono.fromRunnable(() -> {
             try {
                 String contentType = Files.probeContentType(file.toPath());
@@ -131,7 +129,7 @@ public class GetRequestHandler {
         });
     }
 
-    private Mono<Void> executePhp(File file, HttpResponse response) {
+    protected Mono<Void> executePhp(File file, HttpResponse response) {
         return Mono.fromRunnable(() -> {
             try {
                 ProcessBuilder pb = new ProcessBuilder("php-cgi", file.getPath());
@@ -158,7 +156,7 @@ public class GetRequestHandler {
         });
     }
 
-    private Flux<Void> sendMultipleResponses(File directory, HttpResponse response) {
+    protected Flux<Void> sendMultipleResponses(File directory, HttpResponse response) {
         return Flux.defer(() -> {
             try (Stream<Path> paths = Files.list(directory.toPath())) {
                 return Flux.fromStream(paths)
