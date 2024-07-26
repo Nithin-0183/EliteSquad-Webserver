@@ -1,39 +1,42 @@
-version: '3'
+version: '3.8'
 
 services:
-  web:
-    build: .
-    container_name: webserver
-    volumes:
-      - ./WEB_ROOT/site1:/var/www/site1
-      - ./WEB_ROOT/site2:/var/www/site2
-      - ./apache_config.conf:/etc/apache2/sites-available/000-default.conf
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.site1.rule=Host(`site1.local`)"
-      - "traefik.http.routers.site1.entrypoints=web"
-      - "traefik.http.services.site1.loadbalancer.server.port=80"
-      - "traefik.http.routers.site1.service=site1"
-      - "traefik.http.routers.site2.rule=Host(`site2.local`)"
-      - "traefik.http.routers.site2.entrypoints=web"
-      - "traefik.http.services.site2.loadbalancer.server.port=80"
-      - "traefik.http.routers.site2.service=site2"
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mydatabase
+    ports:
+      - "3307:3306"  # Exposing MySQL container's port 3306 to host's port 3307
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     networks:
       - webnet
 
-  traefik:
-    image: traefik:v2.4
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--entrypoints.web.address=:80"
+  myapp:
+    build: .
+    container_name: web-server
     ports:
-      - "80:80"
       - "8080:8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - "8443:8443"
+    environment:
+      - SITE1_DOMAIN=site1.local
+      - SITE1_ROOT=/app/WEB_ROOT/site1
+      - SITE2_DOMAIN=site2.local
+      - SITE2_ROOT=/app/WEB_ROOT/site2
+      - DB.URL=jdbc:mysql://mysql:3306/mydatabase
+      - DB.USERNAME=root
+      - DB.PASSWORD=root
+    depends_on:
+      mysql:
+        condition: service_healthy
     networks:
       - webnet
 
 networks:
   webnet:
+    driver: bridge
