@@ -1,4 +1,4 @@
-# Use an OpenJDK base image for Java 17
+# Use an OpenJDK base image for Java 20
 FROM openjdk:20-jdk-slim
 
 # Set the working directory
@@ -6,7 +6,9 @@ WORKDIR /app
 
 # Install necessary packages including PHP and php-cgi
 RUN apt-get update && \
-    apt-get install -y php php-cgi
+    apt-get install -y php php-cgi && \
+    rm -rf /var/lib/apt/lists/*
+
 
 # Copy the Java application JAR file into the container
 COPY target/elitesquad-webserver-0.0.1-SNAPSHOT.jar /app/elitesquad-webserver-0.0.1-SNAPSHOT.jar
@@ -30,5 +32,5 @@ EXPOSE 8080 8443
 # Run the script and the Java application
 ENTRYPOINT ["sh", "-c", "/app/update-hosts.sh && exec java -jar /app/elitesquad-webserver-0.0.1-SNAPSHOT.jar"]
 
-
+# Keep the container running
 CMD ["tail", "-f", "/dev/null"]
