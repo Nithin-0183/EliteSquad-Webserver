@@ -9,6 +9,7 @@ RUN apt-get update && \
     apt-get install -y php php-cgi && \
     rm -rf /var/lib/apt/lists/*
 
+
 # Copy the Java application JAR file into the container
 COPY target/elitesquad-webserver-0.0.1-SNAPSHOT.jar /app/elitesquad-webserver-0.0.1-SNAPSHOT.jar
 
@@ -23,7 +24,7 @@ COPY WEB_ROOT /app/WEB_ROOT/
 
 # Copy the script to update /etc/hosts
 COPY update-hosts.sh /app/update-hosts.sh
-RUN chmod +x /app/update-hosts.sh
+RUN chmod +x /app/update-hosts.sh # && ls -l /app/update-hosts.sh
 
 # Expose ports 8080 and 8443
 EXPOSE 8080 8443
