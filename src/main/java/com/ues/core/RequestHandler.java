@@ -2,7 +2,7 @@ package com.ues.core;
 
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
-import com.ues.http.HttpStatus;
+import com.ues.http.HttpResponseUtil;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
@@ -35,15 +35,11 @@ public class RequestHandler {
             case "DELETE":
                 return deleteRequestHandler.handle(request, response);
             default:
-                send405(response);
-                return Mono.empty();
+                return handleUnsupportedMethod(response);
         }
     }
 
-    private void send405(HttpResponse response) {
-        response.setStatusCode(HttpStatus.METHOD_NOT_ALLOWED.getCode());
-        response.setReasonPhrase(HttpStatus.METHOD_NOT_ALLOWED.getReasonPhrase());
-        response.setHeaders(Map.of("Content-Type", "application/json"));
-        response.setBody("{\"error\":\"Method Not Allowed\"}".getBytes());
+    private Mono<Void> handleUnsupportedMethod(HttpResponse response) {
+        return HttpResponseUtil.send405(response, "text/html");
     }
 }
