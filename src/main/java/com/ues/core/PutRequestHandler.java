@@ -3,7 +3,7 @@ package com.ues.core;
 import com.ues.database.ResourceManager;
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
-import com.ues.http.HttpStatus;
+import com.ues.http.HttpResponseUtil;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
@@ -15,27 +15,28 @@ public class PutRequestHandler {
         String path = request.getPath();
         Map<String, String> data = parseRequestBody(request.getBody());
         String condition = getConditionFromPath(path);
+        String contentType = determineContentType(request);
 
         return ResourceManager.updateData(getTableNameFromPath(path), data, condition)
                 .flatMap(success -> {
                     if (success) {
-                        response.setStatusCode(HttpStatus.OK.getCode());
-                        response.setReasonPhrase(HttpStatus.OK.getReasonPhrase());
-                        return Mono.empty();
+                        return HttpResponseUtil.send200(response, "Data updated successfully", contentType);
                     } else {
-                        send500(response, "Failed to update data");
-                        return Mono.empty();
+                        return HttpResponseUtil.send500(response, "Failed to update data", contentType);
                     }
-                });
+                })
+                .onErrorResume(e -> HttpResponseUtil.send500(response, e.getMessage(), contentType));
     }
 
     private Map<String, String> parseRequestBody(String body) {
         Map<String, String> data = new HashMap<>();
-        String[] pairs = body.split("&");
-        for (String pair : pairs) {
-            String[] keyValue = pair.split("=");
-            if (keyValue.length == 2) {
-                data.put(keyValue[0], keyValue[1]);
+        if (body != null && !body.isEmpty()) {
+            String[] pairs = body.split("&");
+            for (String pair : pairs) {
+                String[] keyValue = pair.split("=");
+                if (keyValue.length == 2) {
+                    data.put(keyValue[0], keyValue[1]);
+                }
             }
         }
         return data;
@@ -50,10 +51,16 @@ public class PutRequestHandler {
         return parts.length > 2 ? parts[2] : "1=1";
     }
 
-    private void send500(HttpResponse response, String message) {
-        response.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.getCode());
-        response.setReasonPhrase(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
-        response.setHeaders(Map.of("Content-Type", "text/html"));
-        response.setBody(("<h1>500 Internal Server Error</h1><p>" + message + "</p>").getBytes());
+    private String determineContentType(HttpRequest request) {
+        String acceptHeader = request.getHeader("Accept");
+        if (acceptHeader != null) {
+            if (acceptHeader.contains("application/json")) {
+                return "application/json";
+            }
+            if (acceptHeader.contains("text/html")) {
+                return "text/html";
+            }
+        }
+        return "text/plain";
     }
 }

@@ -1,8 +1,6 @@
 package com.ues;
 
 import javax.net.ssl.SSLServerSocketFactory;
-
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -12,8 +10,6 @@ import java.util.Properties;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLSocket;
 import com.ues.core.RequestHandler;
-
-import com.ues.database.ResourceManager;
 
 public class SecureServer implements Runnable{
     private static Map<String, String> domainToRootMap = new HashMap<>();

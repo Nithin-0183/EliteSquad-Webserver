@@ -12,6 +12,7 @@ public class HttpResponse {
     private Map<String, String> headers = new HashMap<>();
     private byte[] body = new byte[0];
 
+    
     public void setStatusCode(int statusCode) {
         this.statusCode = statusCode;
     }
