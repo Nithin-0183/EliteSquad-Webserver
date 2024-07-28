@@ -39,6 +39,10 @@ public class HttpRequest {
         this.body = bodyBuilder.toString().trim();
     }
 
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
     public String getMethod() {
         return method;
     }

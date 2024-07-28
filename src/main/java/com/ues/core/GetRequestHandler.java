@@ -31,8 +31,10 @@ public class GetRequestHandler {
             String host = request.getHeader("Host").split(":")[0];
             String rootDir = domainToRootMap.get(host);
             if (rootDir == null) {
-                HttpResponseUtil.send404(response, "Host not found: " + host, "text/html");
-                sink.success();
+                send404(response, "Host not found: " + host, request)
+                    .then(Mono.fromRunnable(sink::success))
+                    .subscribeOn(Schedulers.boundedElastic())
+                    .subscribe();
                 return;
             }
 
@@ -43,67 +45,67 @@ public class GetRequestHandler {
             File file = new File(rootDir, path);
 
             if (!file.exists()) {
-                handleApiRequest(path, response)
-                        .then(Mono.fromRunnable(sink::success))
-                        .subscribeOn(Schedulers.boundedElastic())
-                        .subscribe();
+                handleApiRequest(path, request, response)
+                    .then(Mono.fromRunnable(sink::success))
+                    .subscribeOn(Schedulers.boundedElastic())
+                    .subscribe();
             } else if (file.isDirectory()) {
                 sendMultipleResponses(file, response)
-                        .then(Mono.fromRunnable(sink::success))
-                        .subscribeOn(Schedulers.boundedElastic())
-                        .subscribe();
+                    .then(Mono.fromRunnable(sink::success))
+                    .subscribeOn(Schedulers.boundedElastic())
+                    .subscribe();
             } else {
                 if (file.getName().endsWith(".php")) {
                     executePhp(file, response)
-                            .then(Mono.fromRunnable(sink::success))
-                            .subscribeOn(Schedulers.boundedElastic())
-                            .subscribe();
+                        .then(Mono.fromRunnable(sink::success))
+                        .subscribeOn(Schedulers.boundedElastic())
+                        .subscribe();
                 } else {
-                    sendResponse(file, response)
-                            .then(Mono.fromRunnable(sink::success))
-                            .subscribeOn(Schedulers.boundedElastic())
-                            .subscribe();
+                    sendResponse(file, response, request)
+                        .then(Mono.fromRunnable(sink::success))
+                        .subscribeOn(Schedulers.boundedElastic())
+                        .subscribe();
                 }
             }
         });
     }
 
-    protected Mono<Void> handleApiRequest(String path, HttpResponse response) {
+    protected Mono<Void> handleApiRequest(String path, HttpRequest request, HttpResponse response) {
         return ResourceManager.getData("api_responses", "path = '" + path + "'")
                 .flatMapMany(Flux::fromIterable)
                 .collectList()
                 .flatMap(list -> {
                     if (list.isEmpty()) {
-                        return HttpResponseUtil.send404(response, "API data not found for path: " + path, "text/html");
+                        return send404(response, "API data not found for path: " + path, request);
                     } else {
-                        return sendJsonResponse(response, list.get(0));
+                        return sendJsonResponse(response, list.get(0), request);
                     }
                 })
-                .onErrorResume(e -> HttpResponseUtil.send500(response, e.getMessage(), "text/html"));
-    }    
+                .onErrorResume(e -> send500(response, e.getMessage(), request));
+    }
 
-    private Mono<Void> sendJsonResponse(HttpResponse response, Map<String, String> data) {
+    private Mono<Void> sendJsonResponse(HttpResponse response, Map<String, String> data, HttpRequest request) {
         return Mono.fromCallable(() -> {
             try {
                 String json = new ObjectMapper().writeValueAsString(data);
-                return HttpResponseUtil.send200(response, json, "application/json");
+                return HttpResponseUtil.send200(response, json, determineContentType(request));
             } catch (IOException e) {
-                return HttpResponseUtil.send500(response, e.getMessage(), "text/html");
+                return HttpResponseUtil.send500(response, e.getMessage(), determineContentType(request));
             }
         }).flatMap(mono -> mono);
     }
 
-    protected Mono<Void> sendResponse(File file, HttpResponse response) {
+    protected Mono<Void> sendResponse(File file, HttpResponse response, HttpRequest request) {
         return Mono.fromCallable(() -> {
             try {
                 String contentType = Files.probeContentType(file.toPath());
                 if (contentType == null) {
-                    contentType = "text/plain"; // Fallback if content type is not detected
+                    contentType = "text/plain";
                 }
                 byte[] content = Files.readAllBytes(file.toPath());
-                return HttpResponseUtil.send200(response, new String(content), contentType);
+                return HttpResponseUtil.send200(response, new String(content), determineContentType(request));
             } catch (IOException e) {
-                return HttpResponseUtil.send500(response, e.getMessage(), "text/html");
+                return HttpResponseUtil.send500(response, e.getMessage(), determineContentType(request));
             }
         }).flatMap(mono -> mono);
     }
@@ -140,7 +142,7 @@ public class GetRequestHandler {
                                     contentType = "text/plain"; // Fallback if content type is not detected
                                 }
                                 byte[] content = Files.readAllBytes(path);
-                                return HttpResponseUtil.send200(response, new String(content), contentType);
+                                return HttpResponseUtil.send200(response, new String(content), determineContentType(null));
                             } catch (IOException e) {
                                 return HttpResponseUtil.send500(response, e.getMessage(), "text/html");
                             }
@@ -149,5 +151,24 @@ public class GetRequestHandler {
                 return Flux.error(e);
             }
         });
+    }
+
+    private Mono<Void> send404(HttpResponse response, String message, HttpRequest request) {
+        return HttpResponseUtil.send404(response, message, determineContentType(request));
+    }
+
+    private Mono<Void> send500(HttpResponse response, String message, HttpRequest request) {
+        return HttpResponseUtil.send500(response, message, determineContentType(request));
+    }
+
+    private String determineContentType(HttpRequest request) {
+        String acceptHeader = request != null ? request.getHeader("Accept") : "";
+        if (acceptHeader.contains("application/json")) {
+            return "application/json";
+        }
+        if (acceptHeader.contains("text/html")) {
+            return "text/html";
+        }
+        return "text/plain";
     }
 }

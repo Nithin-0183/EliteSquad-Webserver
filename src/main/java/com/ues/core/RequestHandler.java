@@ -25,17 +25,29 @@ public class RequestHandler {
 
     public Mono<Void> handle(HttpRequest request, HttpResponse response) {
         String method = request.getMethod();
+        System.out.println("Handling request method: " + method);
+    
         switch (method) {
             case "GET":
-                return getRequestHandler.handle(request, response);
+                return getRequestHandler.handle(request, response)
+                    .doOnSuccess(v -> System.out.println("Handled GET request successfully"))
+                    .doOnError(e -> System.out.println("Error handling GET request: " + e.getMessage()));
             case "POST":
-                return postRequestHandler.handle(request, response);
+                return postRequestHandler.handle(request, response)
+                    .doOnSuccess(v -> System.out.println("Handled POST request successfully"))
+                    .doOnError(e -> System.out.println("Error handling POST request: " + e.getMessage()));
             case "PUT":
-                return putRequestHandler.handle(request, response);
+                return putRequestHandler.handle(request, response)
+                    .doOnSuccess(v -> System.out.println("Handled PUT request successfully"))
+                    .doOnError(e -> System.out.println("Error handling PUT request: " + e.getMessage()));
             case "DELETE":
-                return deleteRequestHandler.handle(request, response);
+                return deleteRequestHandler.handle(request, response)
+                    .doOnSuccess(v -> System.out.println("Handled DELETE request successfully"))
+                    .doOnError(e -> System.out.println("Error handling DELETE request: " + e.getMessage()));
             default:
-                return handleUnsupportedMethod(response);
+                return handleUnsupportedMethod(response)
+                    .doOnSuccess(v -> System.out.println("Handled unsupported method"))
+                    .doOnError(e -> System.out.println("Error handling unsupported method: " + e.getMessage()));
         }
     }
 
