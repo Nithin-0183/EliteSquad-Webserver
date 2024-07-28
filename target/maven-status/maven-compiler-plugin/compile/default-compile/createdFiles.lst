@@ -1,5 +1,6 @@
 com\ues\http\HttpStatusMapping.class
 com\ues\http\HttpResponse.class
+com\ues\core\PutRequestHandler.class
 com\ues\core\RequestHandler.class
 com\ues\http\HttpStatus.class
 com\ues\SecureRequestHandler.class
@@ -7,6 +8,9 @@ com\ues\SecureServer.class
 com\ues\database\DatabaseConfig.class
 com\ues\database\ResourceManager.class
 com\ues\NioHttpServer.class
+com\ues\core\DeleteRequestHandler.class
 com\ues\http\HttpRequest.class
+com\ues\core\PostRequestHandler.class
 com\ues\SSLConfiguration.class
 com\ues\MainServer.class
+com\ues\core\GetRequestHandler.class
