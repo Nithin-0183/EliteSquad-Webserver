@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="sidebar">
+        <a href="#server-status" class="active">Server Status</a>
+        <a href="#add-remove-websites">Add or Remove Websites</a>
+        <a href="#other">Other...</a>
+    </div>
+    <div class="main-content">
+        <div id="server-status">
+            <h2>Server Status</h2>
+            <table class="server-status-table">
+                <thead>
+                    <tr>
+                        <th>Domain</th>
+                        <th>IP address and port running on</th>
+                        <th>Status</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>example1.com</td>
+                        <td>127.0.0.1 | 8443</td>
+                        <td class="status-running">Running</td>
+                        <td>Any other status to be added as needed</td>
+                    </tr>
+                    <tr>
+                        <td>example2.com</td>
+                        <td>127.0.0.1 | 8443</td>
+                        <td class="status-off">Off</td>
+                        <td>Any other status to be added as needed</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="add-remove-websites" style="display: none;">
+            <h2>Add or Remove Applications</h2>
+            <table class="app-management-table">
+                <thead>
+                    <tr>
+                        <th>Domain</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>example1.com</td>
+                        <td>
+                            <button class="button">STOP APPLICATION</button>
+                            <button class="button">START SERVER</button>
+                            <button class="button">DELETE DOMAIN</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <button class="button">ADD NEW</button>
+        </div>
+    </div>
+    <script src="js/script.js"></script>
+</body>
+</html>

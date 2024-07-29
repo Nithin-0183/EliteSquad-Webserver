@@ -1,0 +1,64 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+}
+.sidebar {
+    width: 200px;
+    background-color: #f4f4f4;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+.sidebar a {
+    display: block;
+    color: #333;
+    padding: 10px;
+    text-decoration: none;
+    margin-bottom: 10px;
+    border-left: 3px solid transparent;
+}
+.sidebar a:hover,
+.sidebar a.active {
+    background-color: #ddd;
+    border-left: 3px solid #007bff;
+}
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+.server-status-table,
+.app-management-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.server-status-table th,
+.server-status-table td,
+.app-management-table th,
+.app-management-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+.server-status-table th,
+.app-management-table th {
+    background-color: #f2f2f2;
+}
+.status-running {
+    color: green;
+}
+.status-off {
+    color: red;
+}
+.button {
+    padding: 10px 15px;
+    margin: 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+.button:hover {
+    background-color: #0056b3;
+}
