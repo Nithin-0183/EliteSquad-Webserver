@@ -5,22 +5,22 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a73840f9-ec5e-4566-853e-a9630e3058f1" name="Changes" comment="Fixed the docker-compose.yml and apache_config.conf files.">
+      <change afterPath="$PROJECT_DIR$/modify_hosts.sh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/ues/core/StaticFileHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/static/css/styles.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/static/js/scrips.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/add_remove.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/admin.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/login.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/server_status.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/wrk_test.sh" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apache_config.conf" beforeDir="false" afterPath="$PROJECT_DIR$/apache_config.conf" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/MainServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ues/MainServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/NioHttpServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ues/NioHttpServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/SSLConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ues/SSLConfiguration.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/core/RequestHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ues/core/RequestHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/database/DatabaseConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ues/database/DatabaseConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/demo-0.0.1-SNAPSHOT.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/demo-0.0.1-SNAPSHOT.jar.original" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-archiver/pom.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/update-hosts.sh" beforeDir="false" afterPath="$PROJECT_DIR$/update-hosts.sh" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,6 +104,8 @@
     "Docker.Dockerfile.executor": "Run",
     "Docker.docker-compose.yml.traefik: Compose Deployment.executor": "Run",
     "Docker.docker-compose.yml: Compose Deployment.executor": "Run",
+    "JUnit.DeleteRequestHandlerTest.executor": "Run",
+    "JUnit.GetRequestHandlerTest.executor": "Run",
     "JUnit.HttpRequestTest.executor": "Run",
     "JUnit.HttpRequestTest.testGetRequest.executor": "Run",
     "JUnit.HttpRequestTest.testInvalidRequestLine.executor": "Run",
@@ -112,6 +114,8 @@
     "JUnit.HttpRequestTest.testPostRequestWithBody.executor": "Run",
     "JUnit.HttpRequestTest.testUnrecognizedMethod.executor": "Run",
     "JUnit.HttpResponseTest.executor": "Run",
+    "JUnit.PostRequestHandlerTest.executor": "Run",
+    "JUnit.PutRequestHandlerTest.executor": "Run",
     "RequestMappingsPanelOrder0": "0",
     "RequestMappingsPanelOrder1": "1",
     "RequestMappingsPanelWidth0": "75",
@@ -135,7 +139,7 @@
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
     "run.configurations.included.in.services": "true",
-    "settings.editor.selected.configurable": "reference.settings.project.maven.repository.indices",
+    "settings.editor.selected.configurable": "terminal",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -173,15 +177,62 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="com.ues.NioHttpServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="com.ues.NioHttpServer" />
+    <configuration name="DeleteRequestHandlerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="demo" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="com.ues.*" />
+          <option name="PATTERN" value="com.ues.core.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
+      <option name="PACKAGE_NAME" value="com.ues.core" />
+      <option name="MAIN_CLASS_NAME" value="com.ues.core.DeleteRequestHandlerTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="GetRequestHandlerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="demo" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.ues.core.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.ues.core" />
+      <option name="MAIN_CLASS_NAME" value="com.ues.core.GetRequestHandlerTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PostRequestHandlerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="demo" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.ues.core.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.ues.core" />
+      <option name="MAIN_CLASS_NAME" value="com.ues.core.PostRequestHandlerTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="PutRequestHandlerTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="demo" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.ues.core.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="com.ues.core" />
+      <option name="MAIN_CLASS_NAME" value="com.ues.core.PutRequestHandlerTest" />
+      <option name="TEST_OBJECT" value="class" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -227,14 +278,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Dockerfile" type="docker-deploy" factoryName="dockerfile" temporary="true" server-name="Docker">
-      <deployment type="dockerfile">
-        <settings>
-          <option name="sourceFilePath" value="Dockerfile" />
-        </settings>
-      </deployment>
-      <method v="2" />
-    </configuration>
     <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
       <deployment type="docker-compose.yml">
         <settings />
@@ -247,34 +290,13 @@
       </deployment>
       <method v="2" />
     </configuration>
-    <configuration name="docker-compose.yml: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
-      <deployment type="docker-compose.yml">
-        <settings>
-          <option name="sourceFilePath" value="docker-compose.yml" />
-        </settings>
-      </deployment>
-      <method v="2" />
-    </configuration>
-    <configuration name="docker-compose.yml.traefik: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Docker">
-      <deployment type="docker-compose.yml">
-        <settings>
-          <option name="services">
-            <list>
-              <option value="traefik" />
-            </list>
-          </option>
-          <option name="sourceFilePath" value="docker-compose.yml" />
-        </settings>
-      </deployment>
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
         <item itemvalue="Application.MainServer" />
-        <item itemvalue="Docker.Dockerfile" />
-        <item itemvalue="Application.com.ues.NioHttpServer" />
-        <item itemvalue="Docker.docker-compose.yml: Compose Deployment" />
-        <item itemvalue="Docker.docker-compose.yml.traefik: Compose Deployment" />
+        <item itemvalue="JUnit.PutRequestHandlerTest" />
+        <item itemvalue="JUnit.PostRequestHandlerTest" />
+        <item itemvalue="JUnit.GetRequestHandlerTest" />
+        <item itemvalue="JUnit.DeleteRequestHandlerTest" />
       </list>
     </recent_temporary>
   </component>
@@ -299,6 +321,12 @@
       <workItem from="1719136888472" duration="2667000" />
       <workItem from="1720012132566" duration="11694000" />
       <workItem from="1720186873610" duration="2541000" />
+      <workItem from="1721816934226" duration="7620000" />
+      <workItem from="1721850850516" duration="820000" />
+      <workItem from="1721851693812" duration="6541000" />
+      <workItem from="1721905171872" duration="1389000" />
+      <workItem from="1722032785106" duration="2759000" />
+      <workItem from="1722077562401" duration="25398000" />
     </task>
     <task id="LOCAL-00001" summary="Initial code for webserver">
       <option name="closed" value="true" />
@@ -451,5 +479,9 @@
     <MESSAGE value="Implemented ability to add and host more than one website." />
     <MESSAGE value="Fixed the docker-compose.yml and apache_config.conf files." />
     <option name="LAST_COMMIT_MESSAGE" value="Fixed the docker-compose.yml and apache_config.conf files." />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
   </component>
 </project>

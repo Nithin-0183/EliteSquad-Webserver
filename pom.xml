@@ -111,7 +111,7 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.13.0</version>
         </dependency>
-        
+
     </dependencies>
 
     <build>
@@ -129,6 +129,22 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <!-- Maven Exec Plugin to run the application with a specified main class -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>com.ues.NioHttpServer</mainClass> <!-- Specify the main class to run -->
                 </configuration>
             </plugin>
             <!-- Maven Surefire Plugin to run tests -->

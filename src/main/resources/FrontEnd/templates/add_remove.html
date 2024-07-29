@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add or Remove Websites</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="navbar">
+    <a href="server_status.html">Server Status</a>
+    <a href="add_remove.html">Add or Remove Websites</a>
+    <a href="#">Other...</a>
+</div>
+<div class="container">
+    <h2>Add or Remove Applications</h2>
+    <form id="add-server-form">
+        <label for="domain">Domain:</label>
+        <input type="text" id="domain" name="domain" required>
+        <br>
+        <label for="ip">IP Address:</label>
+        <input type="text" id="ip" name="ip" required>
+        <br>
+        <label for="port">Port:</label>
+        <input type="text" id="port" name="port" required>
+        <br>
+        <button type="submit">Add Server</button>
+    </form>
+    <h3>Existing Servers</h3>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Domain</th>
+            <th>IP address and port</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody id="server-list">
+        <!-- Dynamic content -->
+        </tbody>
+    </table>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const loadServers = () => {
+            fetch('/admin/server-status')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('server-list');
+                    tableBody.innerHTML = '';
+                    data.forEach(server => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                                <td>${server.domain}</td>
+                                <td>${server.ip}:${server.port}</td>
+                                <td><button onclick="removeServer('${server.domain}')">Remove</button></td>
+                            `;
+                        tableBody.appendChild(row);
+                    });
+                });
+        };
+
+        document.getElementById('add-server-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const domain = document.getElementById('domain').value;
+            const ip = document.getElementById('ip').value;
+            const port = document.getElementById('port').value;
+
+            fetch('/admin/add-server', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ domain, ip, port, status: 'Running' })
+            }).then(response => response.json()).then(data => {
+                alert(data.message);
+                loadServers();
+            });
+        });
+
+        window.removeServer = (domain) => {
+            fetch('/admin/remove-server', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ domain })
+            }).then(response => response.json()).then(data => {
+                alert(data.message);
+                loadServers();
+            });
+        };
+
+        loadServers();
+    });
+</script>
+</body>
+</html>
