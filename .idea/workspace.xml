@@ -4,23 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a73840f9-ec5e-4566-853e-a9630e3058f1" name="Changes" comment="Fixed the docker-compose.yml and apache_config.conf files.">
-      <change afterPath="$PROJECT_DIR$/modify_hosts.sh" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/ues/core/StaticFileHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/static/css/styles.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/static/js/scrips.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/add_remove.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/admin.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/index.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/login.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/server_status.html" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/wrk_test.sh" afterDir="false" />
+    <list default="true" id="a73840f9-ec5e-4566-853e-a9630e3058f1" name="Changes" comment="Added files for frontend.">
+      <change afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/styles.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/MainServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ues/MainServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/NioHttpServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ues/NioHttpServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/update-hosts.sh" beforeDir="false" afterPath="$PROJECT_DIR$/update-hosts.sh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/ues/core/StaticFileHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/ues/core/StaticFileHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/FrontEnd/static/css/styles.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/FrontEnd/static/js/scrips.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/scripts.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/add_remove.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/add_remove.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/admin.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/admin.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/login.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/login.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/server_status.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/FrontEnd/templates/server_status.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -148,6 +146,7 @@
       <recent name="junit.framework.TestCase" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\unnam\IdeaProjects\EliteSquad-Webserver\src\main\resources\FrontEnd\templates" />
       <recent name="C:\Users\unnam\IdeaProjects\EliteSquad-Webserver" />
     </key>
     <key name="CreateTestDialog.RecentsKey">
@@ -416,7 +415,15 @@
       <option name="project" value="LOCAL" />
       <updated>1720347519512</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Added files for frontend.">
+      <option name="closed" value="true" />
+      <created>1722269155890</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1722269155890</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -478,7 +485,8 @@
     <MESSAGE value="Added tests for HttpResponse class file use Mockito." />
     <MESSAGE value="Implemented ability to add and host more than one website." />
     <MESSAGE value="Fixed the docker-compose.yml and apache_config.conf files." />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed the docker-compose.yml and apache_config.conf files." />
+    <MESSAGE value="Added files for frontend." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added files for frontend." />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

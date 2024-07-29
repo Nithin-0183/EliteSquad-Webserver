@@ -25,14 +25,13 @@ COPY keystore.jks /etc/ssl/keystore.jks
 # Copy the WEB_ROOT directory into the container
 COPY WEB_ROOT /app/WEB_ROOT/
 
+# Copy the FrontEnd directory into the container
+COPY src/main/resources/FrontEnd /app/FrontEnd/
+
 # Copy the scripts into the container
 COPY update-hosts.sh /app/update-hosts.sh
 COPY modify_hosts.sh /app/modify_hosts.sh
 COPY wrk_test.sh /app/wrk_test.sh
-
-# Copy the Maven build files and project files
-COPY pom.xml /app/pom.xml
-COPY src /app/src
 
 # Make the scripts executable
 RUN chmod +x /app/update-hosts.sh /app/modify_hosts.sh /app/wrk_test.sh

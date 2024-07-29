@@ -35,10 +35,8 @@ public class NioHttpServer implements Runnable {
             serverSocketChannel.configureBlocking(false);
             serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-//            NioHttpServer server = new NioHttpServer();
-//            new Thread(server).start();
             // Add the StaticFileHandler
-            addRequestHandler("/", new StaticFileHandler("/app/src/main/resources/FrontEnd", new HashMap<>()));
+            addRequestHandler("/", new StaticFileHandler("/app/FrontEnd/templates", new HashMap<>()));
 
             System.out.println("Server is listening on port " + PORT);
 
