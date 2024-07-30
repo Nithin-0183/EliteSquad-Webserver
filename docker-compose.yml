@@ -18,7 +18,7 @@ services:
   #     - webnet
 
   myapp:
-    image: elitesquadregistry.azurecr.io/elitesquad-webserver-myapp:latest
+    image: elitesquadregistry.azurecr.io/elitesquad-webserver-myapp
     container_name: web-server
     ports:
       - "8080:8080"
