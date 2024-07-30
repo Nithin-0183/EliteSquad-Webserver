@@ -6,7 +6,7 @@ name: Build and Deploy to Azure Web App - Elitesquad-Webserver
 on:
   push:
     branches:
-      - main
+      - azure-testing
   workflow_dispatch:
 
 jobs:
