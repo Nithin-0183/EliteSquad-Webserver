@@ -14,13 +14,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up JDK 20
         uses: actions/setup-java@v2
         with:
           distribution: 'adopt'
           java-version: '20'
+
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
 
       - name: Build with Maven
         run: mvn clean package
@@ -76,5 +85,6 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y docker-compose
 
       - name: Run Docker Compose
-        run: docker-compose up -d
-
+        run: |
+          docker-compose -f docker-compose.yml build
+          docker-compose -f docker-compose.yml up -d
