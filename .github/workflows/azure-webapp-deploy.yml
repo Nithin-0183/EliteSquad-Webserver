@@ -23,30 +23,33 @@ jobs:
         uses: docker/login-action@v2
         with:
           registry: https://elitesquadregistry.azurecr.io/
-          username: ${{ secrets.AzureAppService_ContainerUsername_1f5c4fde09084a7c84ff30eb741e0763 }}
-          password: ${{ secrets.AzureAppService_ContainerPassword_6f61ad7518e641dc957138aefe3b83b7 }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
 
       - name: Build and push container image to registry
         uses: docker/build-push-action@v3
         with:
           context: .
           push: true
-          tags: elitesquadregistry.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_1f5c4fde09084a7c84ff30eb741e0763 }}/elitesquad-webserver-myapp:${{ github.sha }}
+          tags: elitesquadregistry.azurecr.io/elitesquad-webserver-myapp:${{ github.sha }}
           file: ./Dockerfile
 
-    deploy:
-      runs-on: ubuntu-latest
-      needs: build
-      environment:
-        name: 'production'
-        url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: 'production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
-      steps:
-        - name: Deploy to Azure Web App
-          id: deploy-to-webapp
-          uses: azure/webapps-deploy@v2
-          with:
-            app-name: 'Elitesquad-Webserver'
-            slot-name: 'production'
-            publish-profile: ${{ secrets.AzureAppService_PublishProfile_cf581e4f20d84165869acf308fb46e5b }}
-            images: 'elitesquadregistry.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_1f5c4fde09084a7c84ff30eb741e0763 }}/elitesquad-webserver-myapp:${{ github.sha }}'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'Elitesquad-Webserver'
+          slot-name: 'production'
+          publish-profile: ${{ secrets.AZURE_CREDENTIALS }}
+          images: 'elitesquadregistry.azurecr.io/elitesquad-webserver-myapp:${{ github.sha }}'
