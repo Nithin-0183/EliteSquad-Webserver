@@ -25,6 +25,11 @@ public class RequestHandler {
 
     public Mono<Void> handle(HttpRequest request, HttpResponse response) {
         String method = request.getMethod();
+
+        if (method == null) {
+            return handleUnsupportedMethod(response);
+        }
+        
         System.out.println("Handling request method: " + method);
     
         switch (method) {

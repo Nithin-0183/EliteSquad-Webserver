@@ -13,7 +13,6 @@ public class MainServerTest {
 
     @BeforeEach
     void setUp() {
-        // Start the servers in separate threads
         httpServerThread = new Thread(() -> {
             MainServer.main(new String[]{});
         });
@@ -28,18 +27,15 @@ public class MainServerTest {
 
     @Test
     void testServerThreadsStarted() throws InterruptedException {
-        // Allow some time for servers to start
         httpServerThread.join(5000);
         secureServerThread.join(5000);
 
-        // Check if the threads are still alive
         assertTrue(httpServerThread.isAlive(), "HTTP Server thread should be alive");
         assertTrue(secureServerThread.isAlive(), "Secure Server thread should be alive");
     }
 
     @AfterEach
     void tearDown() {
-        // Interrupt the threads to stop the servers (if they support interruption)
         httpServerThread.interrupt();
         secureServerThread.interrupt();
     }

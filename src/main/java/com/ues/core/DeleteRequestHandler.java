@@ -25,7 +25,11 @@ public class DeleteRequestHandler {
     }
 
     private String getTableNameFromPath(String path) {
-        return path.split("/")[1];
+        String[] parts = path.split("/");
+        if (parts.length > 1) {
+            return parts[1];
+        }
+        throw new IllegalArgumentException("Invalid path: table name not found");
     }
 
     private String getConditionFromPath(String path) {
