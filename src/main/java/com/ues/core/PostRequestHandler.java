@@ -6,6 +6,7 @@ import com.ues.http.HttpResponse;
 import com.ues.http.HttpResponseUtil;
 import reactor.core.publisher.Mono;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,7 +35,13 @@ public class PostRequestHandler {
             for (String pair : pairs) {
                 String[] keyValue = pair.split("=");
                 if (keyValue.length == 2) {
-                    data.put(keyValue[0], keyValue[1]);
+                    try {
+                        String key = java.net.URLDecoder.decode(keyValue[0], "UTF-8");
+                        String value = java.net.URLDecoder.decode(keyValue[1], "UTF-8");
+                        data.put(key, value);
+                    } catch (UnsupportedEncodingException e) {
+                        System.err.println("UnsupportedEncodingException: " + e.getMessage());
+                    }
                 }
             }
         }

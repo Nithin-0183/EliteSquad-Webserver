@@ -1,3 +1,4 @@
+com\ues\http\HttpResponseUtil.class
 com\ues\http\HttpStatusMapping.class
 com\ues\http\HttpResponse.class
 com\ues\core\PutRequestHandler.class
