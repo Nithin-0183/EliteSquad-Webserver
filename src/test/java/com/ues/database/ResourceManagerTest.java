@@ -56,7 +56,7 @@ class ResourceManagerTest {
             when(metaData.getTables(null, null, "USERS", null)).thenReturn(resultSet);
             when(resultSet.next()).thenReturn(true); // Simulate table exists
             when(connection.prepareStatement(anyString())).thenReturn(statement);
-            when(statement.executeUpdate()).thenThrow(new SQLException("Database error")); // Simulate SQL error
+            when(statement.executeUpdate()).thenThrow(new SQLException("Database error"));
 
             Mono<Boolean> result = ResourceManager.createData("users", data);
 
@@ -77,12 +77,11 @@ class ResourceManagerTest {
 
             mockedStatic.when(DatabaseConfig::getConnection).thenReturn(connection);
             when(connection.prepareStatement(anyString())).thenReturn(statement);
-            when(statement.executeUpdate()).thenReturn(1); // Simulate successful update
-
+            when(statement.executeUpdate()).thenReturn(1);
             Mono<Boolean> result = ResourceManager.updateData("users", data, condition);
 
             StepVerifier.create(result)
-                    .expectNext(true) // Expect success
+                    .expectNext(true)
                     .verifyComplete();
         }
     }
@@ -98,12 +97,12 @@ class ResourceManagerTest {
 
             mockedStatic.when(DatabaseConfig::getConnection).thenReturn(connection);
             when(connection.prepareStatement(anyString())).thenReturn(statement);
-            when(statement.executeUpdate()).thenThrow(new SQLException("Database error")); // Simulate SQL error
+            when(statement.executeUpdate()).thenThrow(new SQLException("Database error"));
 
             Mono<Boolean> result = ResourceManager.updateData("users", data, condition);
 
             StepVerifier.create(result)
-                    .expectNext(false) // Expect failure
+                    .expectNext(false)
                     .verifyComplete();
         }
     }
@@ -118,12 +117,12 @@ class ResourceManagerTest {
 
             mockedStatic.when(DatabaseConfig::getConnection).thenReturn(connection);
             when(connection.prepareStatement(anyString())).thenReturn(statement);
-            when(statement.executeUpdate()).thenReturn(1); // Simulate successful delete
+            when(statement.executeUpdate()).thenReturn(1);
 
             Mono<Boolean> result = ResourceManager.deleteData("users", condition);
 
             StepVerifier.create(result)
-                    .expectNext(true) // Expect success
+                    .expectNext(true)
                     .verifyComplete();
         }
     }
@@ -138,12 +137,12 @@ class ResourceManagerTest {
 
             mockedStatic.when(DatabaseConfig::getConnection).thenReturn(connection);
             when(connection.prepareStatement(anyString())).thenReturn(statement);
-            when(statement.executeUpdate()).thenThrow(new SQLException("Database error")); // Simulate SQL error
+            when(statement.executeUpdate()).thenThrow(new SQLException("Database error"));
 
             Mono<Boolean> result = ResourceManager.deleteData("users", condition);
 
             StepVerifier.create(result)
-                    .expectNext(false) // Expect failure
+                    .expectNext(false)
                     .verifyComplete();
         }
     }
@@ -164,12 +163,12 @@ class ResourceManagerTest {
 
             // Set up the ResultSetMetaData and ResultSet mocks
             when(resultSet.getMetaData()).thenReturn(metaData);
-            when(metaData.getColumnCount()).thenReturn(2); // Example column count
+            when(metaData.getColumnCount()).thenReturn(2);
             when(metaData.getColumnName(1)).thenReturn("name");
             when(metaData.getColumnName(2)).thenReturn("age");
-            when(resultSet.next()).thenReturn(true, false); // One row of data
-            when(resultSet.getString(1)).thenReturn("John"); // First column value
-            when(resultSet.getString(2)).thenReturn("30"); // Second column value
+            when(resultSet.next()).thenReturn(true, false);
+            when(resultSet.getString(1)).thenReturn("John");
+            when(resultSet.getString(2)).thenReturn("30");
 
             Mono<List<Map<String, String>>> result = ResourceManager.getData("users", condition);
 
@@ -178,7 +177,7 @@ class ResourceManagerTest {
             );
 
             StepVerifier.create(result)
-                    .expectNext(expected) // Expect the data list
+                    .expectNext(expected)
                     .verifyComplete();
         }
     }
@@ -193,12 +192,12 @@ class ResourceManagerTest {
 
             mockedStatic.when(DatabaseConfig::getConnection).thenReturn(connection);
             when(connection.prepareStatement(anyString())).thenReturn(statement);
-            when(statement.executeQuery()).thenThrow(new SQLException("Database error")); // Simulate SQL error
+            when(statement.executeQuery()).thenThrow(new SQLException("Database error"));
 
             Mono<List<Map<String, String>>> result = ResourceManager.getData("users", condition);
 
             StepVerifier.create(result)
-                    .expectNext(Collections.emptyList()) // Expect an empty list on failure
+                    .expectNext(Collections.emptyList())
                     .verifyComplete();
         }
     }

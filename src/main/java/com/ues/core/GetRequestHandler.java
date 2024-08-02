@@ -1,5 +1,6 @@
 package com.ues.core;
 
+import com.ues.database.ResourceManager;
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
 import com.ues.http.HttpResponseUtil;
@@ -22,39 +23,47 @@ public class GetRequestHandler {
     }
 
     public Mono<Void> handle(HttpRequest request, HttpResponse response) {
+        final String path = request.getPath();
+        final String contentType = determineContentType(request);
+
+        if (path.startsWith("/data/")) {
+            final String tableName = getTableNameFromPath(path);
+            return ResourceManager.getData(tableName, "1=1")
+                    .flatMap(messages -> HttpResponseUtil.send200(response, messages, contentType))
+                    .onErrorResume(e -> HttpResponseUtil.send500(response, e.getMessage(), contentType));
+        }
+
         return Mono.create(sink -> {
             String host = request.getHeader("Host").split(":")[0];
             String rootDir = domainToRootMap.get(host);
             if (rootDir == null) {
-                HttpResponseUtil.send404(response, "Host not found: " + host, determineContentType(request))
-                    .then(Mono.fromRunnable(sink::success))
+                HttpResponseUtil.send404(response, "Host not found: " + host, contentType)
                     .subscribeOn(Schedulers.boundedElastic())
+                    .doOnTerminate(sink::success)
                     .subscribe();
                 return;
             }
 
-            String path = request.getPath();
-            if ("/".equals(path)) {
-                path = "/index.php";
-            }
-            File file = new File(rootDir, path);
-            
+            String adjustedPath = path.equals("/") ? "/index.php" : path;
+            File file = new File(rootDir, adjustedPath);
+
             if (!file.exists()) {
-                HttpResponseUtil.send404(response, "File not found: " + path, determineContentType(request))
-                    .then(Mono.fromRunnable(sink::success))
+                HttpResponseUtil.send404(response, "File not found: " + adjustedPath, contentType)
                     .subscribeOn(Schedulers.boundedElastic())
+                    .doOnTerminate(sink::success)
                     .subscribe();
                 return;
             }
+
             if (file.getName().endsWith(".php")) {
                 executePhp(file, response)
-                    .then(Mono.fromRunnable(sink::success))
                     .subscribeOn(Schedulers.boundedElastic())
+                    .doOnTerminate(sink::success)
                     .subscribe();
             } else {
                 sendResponse(file, response, request)
-                    .then(Mono.fromRunnable(sink::success))
                     .subscribeOn(Schedulers.boundedElastic())
+                    .doOnTerminate(sink::success)
                     .subscribe();
             }
         });
@@ -94,6 +103,14 @@ public class GetRequestHandler {
                 return HttpResponseUtil.send500(response, e.getMessage(), "text/html");
             }
         }).flatMap(mono -> mono);
+    }
+
+    private String getTableNameFromPath(String path) {
+        String[] parts = path.split("/");
+        if (parts.length > 2) {
+            return parts[2];
+        }
+        throw new IllegalArgumentException("Invalid path: table name not found");
     }
 
     private String determineContentType(HttpRequest request) {

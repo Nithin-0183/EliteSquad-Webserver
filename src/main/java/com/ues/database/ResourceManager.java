@@ -19,20 +19,22 @@ public class ResourceManager {
                 if (!tableExists(connection, tableName)) {
                     createTable(connection, tableName, data);
                 }
-
+    
                 StringBuilder sql = new StringBuilder("INSERT INTO ").append(tableName).append(" (");
                 StringBuilder placeholders = new StringBuilder("VALUES (");
-
+    
                 for (String key : data.keySet()) {
                     sql.append(key).append(",");
                     placeholders.append("?,");
                 }
-
-                sql.setLength(sql.length() - 1); // Remove last comma
-                placeholders.setLength(placeholders.length() - 1); // Remove last comma
-
+    
+                sql.setLength(sql.length() - 1);
+                placeholders.setLength(placeholders.length() - 1); 
+    
                 sql.append(") ").append(placeholders).append(")");
-
+    
+                System.out.println("Executing SQL: " + sql.toString());
+    
                 try (PreparedStatement statement = connection.prepareStatement(sql.toString())) {
                     int index = 1;
                     for (String value : data.values()) {

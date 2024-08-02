@@ -4,101 +4,135 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Application</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-        }
-        header {
-            background-color: #2c3e50;
-            color: #fff;
-            padding: 10px 0;
-            text-align: center;
-        }
-        .container {
-            margin-top: 20px;
-        }
-        .chat-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        .chat-messages {
-            height: 300px;
-            overflow-y: scroll;
-            margin-bottom: 20px;
-        }
-        .chat-message {
-            margin-bottom: 10px;
-        }
-        footer {
-            background-color: #2c3e50;
-            color: #fff;
-            text-align: center;
-            padding: 10px 0;
-            position: fixed;
-            width: 100%;
-            bottom: 0;
-        }
-    </style>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-
-<header>
-    <h1>Chat Application</h1>
-</header>
-
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8 chat-container">
-            <div class="chat-messages" id="chat-messages">
-                <!-- 메시지 표시 -->
+    <h1 class="mt-5">Chat Application</h1>
+    <div id="chat-box" class="border p-3 mb-3" style="height: 300px; overflow-y: scroll;">
+        <!-- messages -->
+    </div>
+    <form id="message-form">
+        <div class="form-group">
+            <input type="text" id="username" class="form-control" placeholder="Your Name" required>
+        </div>
+        <div class="form-group">
+            <textarea id="message" class="form-control" rows="3" placeholder="Type your message here..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+    <button id="refresh-btn" class="btn btn-secondary mt-3">Refresh Chat</button>
+</div>
+
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit Message</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <form id="chat-form">
+            <div class="modal-body">
+                <input type="hidden" id="editMessageId">
                 <div class="form-group">
-                    <label for="name">Name</label>
-                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name" required>
+                    <input type="text" id="editUsername" class="form-control" placeholder="Your Name" required>
                 </div>
                 <div class="form-group">
-                    <label for="message">Message</label>
-                    <input type="text" class="form-control" id="message" name="message" placeholder="Enter your message" required>
+                    <textarea id="editMessage" class="form-control" rows="3" placeholder="Edit your message..." required></textarea>
                 </div>
-                <button type="submit" class="btn btn-primary">Send</button>
-            </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveEditButton">Save changes</button>
+            </div>
         </div>
     </div>
 </div>
 
-<footer>
-    &copy; <?php echo date("Y"); ?> Chat Application. All rights reserved.
-</footer>
-
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $('#chat-form').on('submit', function(event) {
-            event.preventDefault();
+    const apiUrl = 'https://site2.local:8443'; // API
 
-            const name = $('#name').val();
-            const message = $('#message').val();
-
-            $.ajax({
-                type: 'POST',
-                url: '/api/chat',
-                data: { name: name, message: message },
-                success: function(response) {
-                    $('#chat-messages').append('<div class="chat-message"><strong>' + response.time + ' ' + response.name + ':</strong> ' + response.message + '</div>');
-                    $('#message').val('');
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    console.log('Error: ' + textStatus + ' ' + errorThrown);
-                }
+    // fetch messages
+    function fetchMessages() {
+        fetch(`${apiUrl}/data/messages`)
+            .then(response => response.json())
+            .then(data => {
+                const chatBox = document.getElementById('chat-box');
+                chatBox.innerHTML = '';
+                data.forEach(message => {
+                    chatBox.innerHTML += `
+                        <div>
+                            <strong>${message.username}:</strong> ${message.text}
+                            <button class="btn btn-sm btn-warning" onclick="editMessage('${message.id}', '${message.username}', '${message.text}')">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteMessage('${message.id}')">Delete</button>
+                        </div>`;
+                });
             });
-        });
-    });
-</script>
+    }
 
+    // send a new message
+    function postMessage(username, text) {
+        fetch(`${apiUrl}/data/messages`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `username=${username}&text=${text}`
+        }).then(response => response.json())
+          .then(() => fetchMessages());
+    }
+
+    // delete a message
+    function deleteMessage(id) {
+        fetch(`${apiUrl}/data/messages/${id}`, {
+            method: 'DELETE'
+        }).then(() => fetchMessages());
+    }
+
+    // update a massage
+    function updateMessage(id, username, text) {
+        fetch(`${apiUrl}/data/messages/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `username=${username}&text=${text}`
+        }).then(() => fetchMessages());
+    }
+
+    // edit message
+    function editMessage(id, username, text) {
+        document.getElementById('editMessageId').value = id;
+        document.getElementById('editUsername').value = username;
+        document.getElementById('editMessage').value = text;
+        $('#editModal').modal('show');
+    }
+
+    document.getElementById('message-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const message = document.getElementById('message').value;
+        postMessage(username, message);
+        document.getElementById('message-form').reset();
+    });
+
+    document.getElementById('refresh-btn').addEventListener('click', fetchMessages);
+
+    document.getElementById('saveEditButton').addEventListener('click', function() {
+        const id = document.getElementById('editMessageId').value;
+        const username = document.getElementById('editUsername').value;
+        const message = document.getElementById('editMessage').value;
+        updateMessage(id, username, message);
+        $('#editModal').modal('hide');
+    });
+
+    // fetch messages
+
+    fetchMessages();
+</script>
 </body>
 </html>
