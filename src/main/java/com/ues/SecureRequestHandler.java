@@ -1,5 +1,6 @@
 package com.ues;
 
+import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLSocket;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -52,7 +53,9 @@ public class SecureRequestHandler implements Runnable {
                 }
             }).block(); // Block until the request is fully handled
 
-        } catch (IOException e) {
+        } catch (SSLHandshakeException e){
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
     }

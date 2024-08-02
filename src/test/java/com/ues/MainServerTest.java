@@ -13,14 +13,13 @@ public class MainServerTest {
 
     @BeforeEach
     void setUp() {
-        httpServerThread = new Thread(() -> {
-            MainServer.main(new String[]{});
-        });
+        httpServerThread = new Thread(
+            new NioHttpServer()
+        );
 
-        secureServerThread = new Thread(() -> {
-            MainServer.main(new String[]{});
-        });
-
+        secureServerThread = new Thread(
+            new SecureServer()
+        );
         httpServerThread.start();
         secureServerThread.start();
     }

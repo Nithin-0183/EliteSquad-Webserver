@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
@@ -41,6 +42,23 @@ public class DatabaseConfig {
                  Statement stmt = conn.createStatement();
                  InputStream inputStream = DatabaseConfig.class.getClassLoader().getResourceAsStream("init.sql");
                  BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+                    
+                boolean exists = false;
+                try (ResultSet resultSet = conn.getMetaData().getCatalogs()) {
+                    while (resultSet.next()) {
+                        String catalog = resultSet.getString(1);
+                        if (catalog.equalsIgnoreCase(properties.getProperty("db.database"))) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                
+                if(exists){
+                    break;
+                }
 
                 if (inputStream == null) {
                     throw new RuntimeException("Unable to find init.sql");
