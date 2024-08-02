@@ -20,16 +20,24 @@ class ResourceManagerTest {
         try (MockedStatic<DatabaseConfig> mockedStatic = mockStatic(DatabaseConfig.class)) {
             Connection connection = mock(Connection.class);
             PreparedStatement statement = mock(PreparedStatement.class);
+            DatabaseMetaData metaData = mock(DatabaseMetaData.class);
+            ResultSet resultSet = mock(ResultSet.class);
 
             mockedStatic.when(DatabaseConfig::getConnection).thenReturn(connection);
+            when(connection.getMetaData()).thenReturn(metaData);
+            when(metaData.getTables(null, null, "USERS", null)).thenReturn(resultSet);
+            when(resultSet.next()).thenReturn(false);
             when(connection.prepareStatement(anyString())).thenReturn(statement);
-            when(statement.executeUpdate()).thenReturn(1); // Simulate successful insert
+            when(statement.executeUpdate()).thenReturn(1);
 
             Mono<Boolean> result = ResourceManager.createData("users", data);
 
             StepVerifier.create(result)
-                    .expectNext(true) // Expect success
+                    .expectNext(true) 
                     .verifyComplete();
+
+            verify(statement, times(1)).execute();
+            verify(statement, times(1)).executeUpdate();
         }
     }
 
@@ -40,8 +48,13 @@ class ResourceManagerTest {
         try (MockedStatic<DatabaseConfig> mockedStatic = mockStatic(DatabaseConfig.class)) {
             Connection connection = mock(Connection.class);
             PreparedStatement statement = mock(PreparedStatement.class);
+            DatabaseMetaData metaData = mock(DatabaseMetaData.class);
+            ResultSet resultSet = mock(ResultSet.class);
 
             mockedStatic.when(DatabaseConfig::getConnection).thenReturn(connection);
+            when(connection.getMetaData()).thenReturn(metaData);
+            when(metaData.getTables(null, null, "USERS", null)).thenReturn(resultSet);
+            when(resultSet.next()).thenReturn(true); // Simulate table exists
             when(connection.prepareStatement(anyString())).thenReturn(statement);
             when(statement.executeUpdate()).thenThrow(new SQLException("Database error")); // Simulate SQL error
 
@@ -148,7 +161,7 @@ class ResourceManagerTest {
             mockedStatic.when(DatabaseConfig::getConnection).thenReturn(connection);
             when(connection.prepareStatement(anyString())).thenReturn(statement);
             when(statement.executeQuery()).thenReturn(resultSet);
-            
+
             // Set up the ResultSetMetaData and ResultSet mocks
             when(resultSet.getMetaData()).thenReturn(metaData);
             when(metaData.getColumnCount()).thenReturn(2); // Example column count

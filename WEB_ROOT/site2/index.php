@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Blog</title>
+    <title>Chat Application</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
             background-color: #f0f0f0;
         }
         header {
@@ -17,46 +16,22 @@
             padding: 10px 0;
             text-align: center;
         }
-        nav {
-            display: flex;
-            justify-content: center;
-            background-color: #34495e;
-        }
-        nav a {
-            color: #fff;
-            padding: 14px 20px;
-            text-decoration: none;
-            text-align: center;
-        }
-        nav a:hover {
-            background-color: #2c3e50;
-        }
         .container {
-            display: flex;
-            flex-wrap: wrap;
-            max-width: 1200px;
-            margin: auto;
-            padding: 20px;
+            margin-top: 20px;
+        }
+        .chat-container {
             background-color: #fff;
-        }
-        .main-content {
-            flex: 3;
-            margin-right: 20px;
-        }
-        .sidebar {
-            flex: 1;
-            background-color: #ecf0f1;
             padding: 20px;
             border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        .article {
+        .chat-messages {
+            height: 300px;
+            overflow-y: scroll;
             margin-bottom: 20px;
-            padding: 20px;
-            background-color: #ecf0f1;
-            border-radius: 8px;
         }
-        .article h2 {
-            margin-top: 0;
+        .chat-message {
+            margin-bottom: 10px;
         }
         footer {
             background-color: #2c3e50;
@@ -72,52 +47,58 @@
 <body>
 
 <header>
-    <h1>My Blog</h1>
+    <h1>Chat Application</h1>
 </header>
 
-<nav>
-    <a href="#">Home</a>
-    <a href="#">News</a>
-    <a href="#">About</a>
-    <a href="#">Contact</a>
-</nav>
-
 <div class="container">
-    <div class="main-content">
-        <div class="article">
-            <h2>Article 1</h2>
-            <p>
-                <?php
-                // PHP code to fetch and display the content of Article 1
-                echo "This is the content of the first article. It can be dynamically fetched from a database.";
-                ?>
-            </p>
-        </div>
-        <div class="article">
-            <h2>Article 2</h2>
-            <p>
-                <?php
-                // PHP code to fetch and display the content of Article 2
-                echo "This is the content of the second article. It can be dynamically fetched from a database.";
-                ?>
-            </p>
+    <div class="row justify-content-center">
+        <div class="col-md-8 chat-container">
+            <div class="chat-messages" id="chat-messages">
+                <!-- 메시지 표시 -->
+            </div>
+            <form id="chat-form">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <input type="text" class="form-control" id="message" name="message" placeholder="Enter your message" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Send</button>
+            </form>
         </div>
     </div>
-
-    <aside class="sidebar">
-        <h3>Recent Posts</h3>
-        <ul>
-            <li><a href="#">Post 1</a></li>
-            <li><a href="#">Post 2</a></li>
-            <li><a href="#">Post 3</a></li>
-            <li><a href="#">Post 4</a></li>
-        </ul>
-    </aside>
 </div>
 
 <footer>
-    &copy; <?php echo date("Y"); ?> My Blog. All rights reserved.
+    &copy; <?php echo date("Y"); ?> Chat Application. All rights reserved.
 </footer>
+
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#chat-form').on('submit', function(event) {
+            event.preventDefault();
+
+            const name = $('#name').val();
+            const message = $('#message').val();
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/chat',
+                data: { name: name, message: message },
+                success: function(response) {
+                    $('#chat-messages').append('<div class="chat-message"><strong>' + response.time + ' ' + response.name + ':</strong> ' + response.message + '</div>');
+                    $('#message').val('');
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.log('Error: ' + textStatus + ' ' + errorThrown);
+                }
+            });
+        });
+    });
+</script>
 
 </body>
 </html>

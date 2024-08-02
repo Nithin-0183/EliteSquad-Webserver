@@ -1,9 +1,15 @@
 package com.ues.http;
 
-import java.util.Map;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+import java.util.Map;
+
 public class HttpResponseUtil {
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private HttpResponseUtil() {
     }
@@ -15,6 +21,16 @@ public class HttpResponseUtil {
         response.setHeaders(Map.of("Content-Type", contentType));
         response.setBody(bodyContent.getBytes());
         return Mono.empty();
+    }
+
+    // Overloaded send200 method to handle List<Map<String, String>>
+    public static Mono<Void> send200(HttpResponse response, List<Map<String, String>> bodyContent, String contentType) {
+        try {
+            String jsonString = objectMapper.writeValueAsString(bodyContent);
+            return sendResponse(response, HttpStatus.OK, jsonString, contentType);
+        } catch (JsonProcessingException e) {
+            return send500(response, e.getMessage(), contentType);
+        }
     }
 
     // 200 OK with customizable content type

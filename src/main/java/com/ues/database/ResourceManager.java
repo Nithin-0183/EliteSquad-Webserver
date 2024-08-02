@@ -15,34 +15,56 @@ public class ResourceManager {
 
     public static Mono<Boolean> createData(String tableName, Map<String, String> data) {
         return Mono.fromCallable(() -> {
-            StringBuilder sql = new StringBuilder("INSERT INTO ").append(tableName).append(" (");
-            StringBuilder placeholders = new StringBuilder("VALUES (");
-
-            for (String key : data.keySet()) {
-                sql.append(key).append(",");
-                placeholders.append("?,");
-            }
-
-            sql.setLength(sql.length() - 1); // Remove last comma
-            placeholders.setLength(placeholders.length() - 1); // Remove last comma
-
-            sql.append(") ").append(placeholders).append(")");
-
-            try (Connection connection = DatabaseConfig.getConnection();
-                 PreparedStatement statement = connection.prepareStatement(sql.toString())) {
-
-                int index = 1;
-                for (String value : data.values()) {
-                    statement.setString(index++, value);
+            try (Connection connection = DatabaseConfig.getConnection()) {
+                if (!tableExists(connection, tableName)) {
+                    createTable(connection, tableName, data);
                 }
 
-                statement.executeUpdate();
-                return true;
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return false;
+                StringBuilder sql = new StringBuilder("INSERT INTO ").append(tableName).append(" (");
+                StringBuilder placeholders = new StringBuilder("VALUES (");
+
+                for (String key : data.keySet()) {
+                    sql.append(key).append(",");
+                    placeholders.append("?,");
+                }
+
+                sql.setLength(sql.length() - 1); // Remove last comma
+                placeholders.setLength(placeholders.length() - 1); // Remove last comma
+
+                sql.append(") ").append(placeholders).append(")");
+
+                try (PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+                    int index = 1;
+                    for (String value : data.values()) {
+                        statement.setString(index++, value);
+                    }
+                    statement.executeUpdate();
+                    return true;
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return false;
+                }
             }
         });
+    }
+
+    private static boolean tableExists(Connection connection, String tableName) throws SQLException {
+        try (ResultSet resultSet = connection.getMetaData().getTables(null, null, tableName.toUpperCase(), null)) {
+            return resultSet.next();
+        }
+    }
+
+    private static void createTable(Connection connection, String tableName, Map<String, String> data) throws SQLException {
+        StringBuilder sql = new StringBuilder("CREATE TABLE ").append(tableName).append(" (");
+        for (String key : data.keySet()) {
+            sql.append(key).append(" VARCHAR(255),");
+        }
+        sql.setLength(sql.length() - 1); // Remove last comma
+        sql.append(")");
+
+        try (PreparedStatement statement = connection.prepareStatement(sql.toString())) {
+            statement.execute();
+        }
     }
 
     public static Mono<Boolean> updateData(String tableName, Map<String, String> data, String condition) {
