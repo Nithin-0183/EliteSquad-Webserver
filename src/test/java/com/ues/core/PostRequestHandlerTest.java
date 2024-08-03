@@ -28,8 +28,8 @@ class PostRequestHandlerTest {
     void handle_createDataSuccess() {
         HttpRequest request = mock(HttpRequest.class);
         HttpResponse response = new HttpResponse();
-        when(request.getPath()).thenReturn("/table");
-        when(request.getBody()).thenReturn("key=value");
+        when(request.getPath()).thenReturn("/data/messages");
+        when(request.getBody()).thenReturn("username=Chungman%20Lee&text=Hi");
 
         try (MockedStatic<ResourceManager> mockedStatic = mockStatic(ResourceManager.class)) {
             mockedStatic.when(() -> ResourceManager.createData(anyString(), anyMap()))
@@ -49,8 +49,8 @@ class PostRequestHandlerTest {
     void handle_createDataFailure() {
         HttpRequest request = mock(HttpRequest.class);
         HttpResponse response = new HttpResponse();
-        when(request.getPath()).thenReturn("/table");
-        when(request.getBody()).thenReturn("key=value");
+        when(request.getPath()).thenReturn("/data/messages");
+        when(request.getBody()).thenReturn("username=Chungman%20Lee&text=Hi");
 
         try (MockedStatic<ResourceManager> mockedStatic = mockStatic(ResourceManager.class)) {
             mockedStatic.when(() -> ResourceManager.createData(anyString(), anyMap()))

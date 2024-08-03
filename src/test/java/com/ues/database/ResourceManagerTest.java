@@ -15,7 +15,7 @@ class ResourceManagerTest {
 
     @Test
     void createData_success() throws SQLException {
-        Map<String, String> data = Map.of("name", "John", "age", "30");
+        Map<String, String> data = Map.of("name", "John", "email", "admin@ucd.ie");
 
         try (MockedStatic<DatabaseConfig> mockedStatic = mockStatic(DatabaseConfig.class)) {
             Connection connection = mock(Connection.class);
@@ -33,7 +33,7 @@ class ResourceManagerTest {
             Mono<Boolean> result = ResourceManager.createData("users", data);
 
             StepVerifier.create(result)
-                    .expectNext(true) 
+                    .expectNext(true)
                     .verifyComplete();
 
             verify(statement, times(1)).execute();
@@ -43,7 +43,7 @@ class ResourceManagerTest {
 
     @Test
     void createData_failure() throws SQLException {
-        Map<String, String> data = Map.of("name", "John", "age", "30");
+        Map<String, String> data = Map.of("name", "John", "email", "admin@ucd.ie");
 
         try (MockedStatic<DatabaseConfig> mockedStatic = mockStatic(DatabaseConfig.class)) {
             Connection connection = mock(Connection.class);
@@ -61,7 +61,7 @@ class ResourceManagerTest {
             Mono<Boolean> result = ResourceManager.createData("users", data);
 
             StepVerifier.create(result)
-                    .expectNext(false) // Expect failure
+                    .expectNext(false)
                     .verifyComplete();
         }
     }

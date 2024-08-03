@@ -14,11 +14,18 @@ public class HttpResponseUtil {
     private HttpResponseUtil() {
     }
 
+    private static void addCORSHeaders(HttpResponse response) {
+        response.getHeaders().put("Access-Control-Allow-Origin", "*");
+        response.getHeaders().put("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        response.getHeaders().put("Access-Control-Allow-Headers", "Content-Type");
+    }
+
     // Common response sender with content type
     public static Mono<Void> sendResponse(HttpResponse response, HttpStatus status, String bodyContent, String contentType) {
         response.setStatusCode(status.getCode());
         response.setReasonPhrase(status.getReasonPhrase());
         response.setHeaders(Map.of("Content-Type", contentType));
+        addCORSHeaders(response);
         response.setBody(bodyContent.getBytes());
         return Mono.empty();
     }

@@ -57,7 +57,11 @@ public class PostRequestHandler {
     }
 
     private String getTableNameFromPath(String path) {
-        return path.split("/")[1];
+        String[] parts = path.split("/");
+        if (parts.length > 2) {
+            return parts[2];
+        }
+        throw new IllegalArgumentException("Invalid path: table name not found");
     }
 
     private String determineContentType(HttpRequest request) {

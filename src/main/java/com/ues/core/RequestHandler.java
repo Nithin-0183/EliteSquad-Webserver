@@ -31,6 +31,8 @@ public class RequestHandler {
         }
         
         System.out.println("Handling request method: " + method);
+        System.out.println(request.getHeader("Content-Type"));
+        System.out.println(request.getBody());
     
         switch (method) {
             case "GET":

@@ -75,16 +75,16 @@
     }
 
     // send a new message
-    function postMessage(username, text) {
+    const postMessage = (username, text) => {
         fetch(`${apiUrl}/data/messages`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: `username=${username}&text=${text}`
+            body: `username=${encodeURIComponent(username)}&text=${encodeURIComponent(text)}`
         }).then(response => response.json())
-          .then(() => fetchMessages());
-    }
+        .then(() => fetchMessages());
+    };
 
     // delete a message
     function deleteMessage(id) {
@@ -93,14 +93,14 @@
         }).then(() => fetchMessages());
     }
 
-    // update a massage
+    // update a message
     function updateMessage(id, username, text) {
         fetch(`${apiUrl}/data/messages/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: `username=${username}&text=${text}`
+            body: `username=${encodeURIComponent(username)}&text=${encodeURIComponent(text)}`
         }).then(() => fetchMessages());
     }
 
@@ -131,8 +131,8 @@
     });
 
     // fetch messages
-
     fetchMessages();
+    
 </script>
 </body>
 </html>

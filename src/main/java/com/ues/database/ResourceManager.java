@@ -16,7 +16,9 @@ public class ResourceManager {
     public static Mono<Boolean> createData(String tableName, Map<String, String> data) {
         return Mono.fromCallable(() -> {
             try (Connection connection = DatabaseConfig.getConnection()) {
+                System.out.println("Checking if table exists: " + tableName);
                 if (!tableExists(connection, tableName)) {
+                    System.out.println("Table does not exist, creating table: " + tableName);
                     createTable(connection, tableName, data);
                 }
     
@@ -29,7 +31,7 @@ public class ResourceManager {
                 }
     
                 sql.setLength(sql.length() - 1);
-                placeholders.setLength(placeholders.length() - 1); 
+                placeholders.setLength(placeholders.length() - 1);
     
                 sql.append(") ").append(placeholders).append(")");
     
@@ -37,18 +39,29 @@ public class ResourceManager {
     
                 try (PreparedStatement statement = connection.prepareStatement(sql.toString())) {
                     int index = 1;
+                    List<String> parameters = new ArrayList<>();
                     for (String value : data.values()) {
                         statement.setString(index++, value);
+                        parameters.add(value);
                     }
+    
+                    String boundSql = sql.toString();
+                    for (String param : parameters) {
+                        boundSql = boundSql.replaceFirst("\\?", "'" + param + "'");
+                    }
+    
+                    System.out.println("Bound SQL: " + boundSql);
+    
                     statement.executeUpdate();
                     return true;
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    System.err.println("Database error: " + e.getMessage());
                     return false;
                 }
             }
         });
     }
+    
 
     private static boolean tableExists(Connection connection, String tableName) throws SQLException {
         try (ResultSet resultSet = connection.getMetaData().getTables(null, null, tableName.toUpperCase(), null)) {
@@ -63,6 +76,8 @@ public class ResourceManager {
         }
         sql.setLength(sql.length() - 1); // Remove last comma
         sql.append(")");
+
+        System.out.println("Creating table with SQL: " + sql.toString());
 
         try (PreparedStatement statement = connection.prepareStatement(sql.toString())) {
             statement.execute();
@@ -91,7 +106,7 @@ public class ResourceManager {
                 statement.executeUpdate();
                 return true;
             } catch (SQLException e) {
-                e.printStackTrace();
+                System.err.println("Database error: " + e.getMessage());
                 return false;
             }
         });
@@ -107,7 +122,7 @@ public class ResourceManager {
                 statement.executeUpdate();
                 return true;
             } catch (SQLException e) {
-                e.printStackTrace();
+                System.err.println("Database error: " + e.getMessage());
                 return false;
             }
         });
@@ -131,7 +146,7 @@ public class ResourceManager {
                     result.add(row);
                 }
             } catch (SQLException e) {
-                e.printStackTrace();
+                System.err.println("Database error: " + e.getMessage());
             }
 
             return result;
