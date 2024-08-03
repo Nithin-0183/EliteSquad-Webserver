@@ -26,15 +26,15 @@ public class DeleteRequestHandler {
 
     private String getTableNameFromPath(String path) {
         String[] parts = path.split("/");
-        if (parts.length > 1) {
-            return parts[1];
+        if (parts.length > 2) {
+            return parts[2];
         }
         throw new IllegalArgumentException("Invalid path: table name not found");
     }
 
     private String getConditionFromPath(String path) {
         String[] parts = path.split("/");
-        return parts.length > 2 ? parts[2] : "1=1";
+        return parts.length > 3 ? parts[3] : "1=1";
     }
 
     private String determineContentType(HttpRequest request) {

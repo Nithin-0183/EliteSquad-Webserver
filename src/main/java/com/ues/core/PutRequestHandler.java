@@ -6,6 +6,7 @@ import com.ues.http.HttpResponse;
 import com.ues.http.HttpResponseUtil;
 import reactor.core.publisher.Mono;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,9 +14,12 @@ public class PutRequestHandler {
 
     public Mono<Void> handle(HttpRequest request, HttpResponse response) {
         String path = request.getPath();
+        System.out.println(request.getBody() + " " + path); 
         Map<String, String> data = parseRequestBody(request.getBody());
         String condition = getConditionFromPath(path);
         String contentType = determineContentType(request);
+
+        System.out.println("Received PUT request with data: " + data);
 
         return ResourceManager.updateData(getTableNameFromPath(path), data, condition)
                 .flatMap(success -> {
@@ -25,7 +29,10 @@ public class PutRequestHandler {
                         return HttpResponseUtil.send500(response, "Failed to update data", contentType);
                     }
                 })
-                .onErrorResume(e -> HttpResponseUtil.send500(response, e.getMessage(), contentType));
+                .onErrorResume(e -> {
+                    System.out.println("Error updating data: " + e.getMessage());
+                    return HttpResponseUtil.send500(response, e.getMessage(), contentType);
+                });
     }
 
     private Map<String, String> parseRequestBody(String body) {
@@ -35,7 +42,13 @@ public class PutRequestHandler {
             for (String pair : pairs) {
                 String[] keyValue = pair.split("=");
                 if (keyValue.length == 2) {
-                    data.put(keyValue[0], keyValue[1]);
+                    try {
+                        String key = java.net.URLDecoder.decode(keyValue[0], "UTF-8");
+                        String value = java.net.URLDecoder.decode(keyValue[1], "UTF-8");
+                        data.put(key, value);
+                    } catch (UnsupportedEncodingException e) {
+                        System.err.println("UnsupportedEncodingException: " + e.getMessage());
+                    }
                 }
             }
         }
@@ -43,12 +56,16 @@ public class PutRequestHandler {
     }
 
     private String getTableNameFromPath(String path) {
-        return path.split("/")[1];
+        String[] parts = path.split("/");
+        if (parts.length > 2) {
+            return parts[2];
+        }
+        throw new IllegalArgumentException("Invalid path: table name not found");
     }
 
     private String getConditionFromPath(String path) {
         String[] parts = path.split("/");
-        return parts.length > 2 ? parts[2] : "1=1";
+        return parts.length > 3 ? parts[3] : "1=1";
     }
 
     private String determineContentType(HttpRequest request) {

@@ -61,7 +61,6 @@ public class ResourceManager {
             }
         });
     }
-    
 
     private static boolean tableExists(Connection connection, String tableName) throws SQLException {
         try (ResultSet resultSet = connection.getMetaData().getTables(null, null, tableName.toUpperCase(), null)) {
@@ -71,6 +70,7 @@ public class ResourceManager {
 
     private static void createTable(Connection connection, String tableName, Map<String, String> data) throws SQLException {
         StringBuilder sql = new StringBuilder("CREATE TABLE ").append(tableName).append(" (");
+        sql.append("id INT PRIMARY KEY AUTO_INCREMENT,");
         for (String key : data.keySet()) {
             sql.append(key).append(" VARCHAR(255),");
         }
@@ -114,7 +114,7 @@ public class ResourceManager {
 
     public static Mono<Boolean> deleteData(String tableName, String condition) {
         return Mono.fromCallable(() -> {
-            String sql = "DELETE FROM " + tableName + " WHERE " + condition;
+            String sql = "DELETE FROM " + tableName + " WHERE id=" + condition;
 
             try (Connection connection = DatabaseConfig.getConnection();
                  PreparedStatement statement = connection.prepareStatement(sql)) {
