@@ -20,14 +20,12 @@ class ResourceManagerTest {
         try (MockedStatic<DatabaseConfig> mockedStatic = mockStatic(DatabaseConfig.class)) {
             Connection connection = mock(Connection.class);
             PreparedStatement statement = mock(PreparedStatement.class);
-            DatabaseMetaData metaData = mock(DatabaseMetaData.class);
             ResultSet resultSet = mock(ResultSet.class);
 
             mockedStatic.when(DatabaseConfig::getConnection).thenReturn(connection);
-            when(connection.getMetaData()).thenReturn(metaData);
-            when(metaData.getTables(null, null, "USERS", null)).thenReturn(resultSet);
-            when(resultSet.next()).thenReturn(false);
             when(connection.prepareStatement(anyString())).thenReturn(statement);
+            when(statement.executeQuery()).thenReturn(resultSet);
+            when(resultSet.next()).thenReturn(false); // Simulate table does not exist
             when(statement.executeUpdate()).thenReturn(1);
 
             Mono<Boolean> result = ResourceManager.createData("users", data);
@@ -36,8 +34,11 @@ class ResourceManagerTest {
                     .expectNext(true)
                     .verifyComplete();
 
-            verify(statement, times(1)).execute();
             verify(statement, times(1)).executeUpdate();
+            verify(statement, times(1)).execute(); // Only one execute call for createTable
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 
@@ -48,14 +49,12 @@ class ResourceManagerTest {
         try (MockedStatic<DatabaseConfig> mockedStatic = mockStatic(DatabaseConfig.class)) {
             Connection connection = mock(Connection.class);
             PreparedStatement statement = mock(PreparedStatement.class);
-            DatabaseMetaData metaData = mock(DatabaseMetaData.class);
             ResultSet resultSet = mock(ResultSet.class);
 
             mockedStatic.when(DatabaseConfig::getConnection).thenReturn(connection);
-            when(connection.getMetaData()).thenReturn(metaData);
-            when(metaData.getTables(null, null, "USERS", null)).thenReturn(resultSet);
-            when(resultSet.next()).thenReturn(true); // Simulate table exists
             when(connection.prepareStatement(anyString())).thenReturn(statement);
+            when(statement.executeQuery()).thenReturn(resultSet);
+            when(resultSet.next()).thenReturn(true); // Simulate table exists
             when(statement.executeUpdate()).thenThrow(new SQLException("Database error"));
 
             Mono<Boolean> result = ResourceManager.createData("users", data);
@@ -63,6 +62,9 @@ class ResourceManagerTest {
             StepVerifier.create(result)
                     .expectNext(false)
                     .verifyComplete();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 
@@ -78,11 +80,15 @@ class ResourceManagerTest {
             mockedStatic.when(DatabaseConfig::getConnection).thenReturn(connection);
             when(connection.prepareStatement(anyString())).thenReturn(statement);
             when(statement.executeUpdate()).thenReturn(1);
+
             Mono<Boolean> result = ResourceManager.updateData("users", data, condition);
 
             StepVerifier.create(result)
                     .expectNext(true)
                     .verifyComplete();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 
@@ -104,6 +110,9 @@ class ResourceManagerTest {
             StepVerifier.create(result)
                     .expectNext(false)
                     .verifyComplete();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 
@@ -124,6 +133,9 @@ class ResourceManagerTest {
             StepVerifier.create(result)
                     .expectNext(true)
                     .verifyComplete();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 
@@ -144,6 +156,9 @@ class ResourceManagerTest {
             StepVerifier.create(result)
                     .expectNext(false)
                     .verifyComplete();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 
@@ -179,6 +194,9 @@ class ResourceManagerTest {
             StepVerifier.create(result)
                     .expectNext(expected)
                     .verifyComplete();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 
@@ -199,6 +217,9 @@ class ResourceManagerTest {
             StepVerifier.create(result)
                     .expectNext(Collections.emptyList())
                     .verifyComplete();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
     }
 }

@@ -9,7 +9,6 @@ import java.io.IOException;
 import com.ues.core.RequestHandler;
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
-
 import reactor.core.publisher.Mono;
 
 public class SecureRequestHandler implements Runnable {
@@ -60,7 +59,9 @@ public class SecureRequestHandler implements Runnable {
 
                 HttpRequest httpRequest = new HttpRequest();
                 httpRequest.setRequestLine(method, path, version);
-                httpRequest.setBody(new String(body));
+                if (contentLength > 0) {
+                    httpRequest.setBody(new String(body));
+                }
 
                 String[] headerLines = fullRequest.split("\r\n\r\n")[0].split("\r\n");
                 for (String headerLine : headerLines) {

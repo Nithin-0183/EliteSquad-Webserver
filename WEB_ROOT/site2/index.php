@@ -71,6 +71,7 @@
                             <button class="btn btn-sm btn-danger" onclick="deleteMessage('${message.id}')">Delete</button>
                         </div>`;
                 });
+                chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
             });
     }
 
@@ -130,7 +131,10 @@
         $('#editModal').modal('hide');
     });
 
-    // fetch messages
+    // Polling to fetch messages every 5 seconds
+    setInterval(fetchMessages, 5000);
+
+    // fetch messages on initial load
     fetchMessages();
     
 </script>

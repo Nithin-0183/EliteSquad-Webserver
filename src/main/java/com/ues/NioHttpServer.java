@@ -88,6 +88,14 @@ public class NioHttpServer implements Runnable {
                 System.out.println("Request: " + request);
 
                 HttpRequest httpRequest = new HttpRequest(request);
+                if (httpRequest.getMethod().equalsIgnoreCase("POST") || httpRequest.getMethod().equalsIgnoreCase("PUT")) {
+                    String body = new String(bytes);
+                    httpRequest.setBody(body);
+                } else if (httpRequest.getMethod().equalsIgnoreCase("DELETE") || httpRequest.getMethod().equalsIgnoreCase("GET")) {
+                    String body = new String(bytes);
+                    httpRequest.setBody(body);
+                }
+
                 HttpResponse response = new HttpResponse();
 
                 RequestHandler requestHandler = new RequestHandler(domainToRootMap);
