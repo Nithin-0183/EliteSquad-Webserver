@@ -8,11 +8,11 @@ import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import com.ues.core.RequestHandler;
+import com.ues.database.DatabaseConfig;
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
 import reactor.core.publisher.Mono;
@@ -26,7 +26,7 @@ public class NioHttpServer implements Runnable {
     @Override
     public void run() {
         try {
-            loadConfiguration();
+            domainToRootMap = DatabaseConfig.loadConfigurationFromDatabase();
 
             AsynchronousServerSocketChannel serverChannel = AsynchronousServerSocketChannel.open();
             serverChannel.bind(new InetSocketAddress(PORT));
@@ -54,20 +54,6 @@ public class NioHttpServer implements Runnable {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    private static void loadConfiguration() throws IOException {
-        Properties properties = new Properties();
-        try (InputStream input = NioHttpServer.class.getClassLoader().getResourceAsStream("application.properties")) {
-            if (input != null) {
-                properties.load(input);
-                domainToRootMap.put(properties.getProperty("site1.domain"), properties.getProperty("site1.root"));
-                domainToRootMap.put(properties.getProperty("site2.domain"), properties.getProperty("site2.root"));
-                System.out.println(domainToRootMap.toString());
-            } else {
-                throw new FileNotFoundException("Property file 'application.properties' not found in the classpath");
-            }
         }
     }
 
