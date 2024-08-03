@@ -114,7 +114,7 @@ public class ResourceManager {
 
     public static Mono<Boolean> deleteData(String tableName, String condition) {
         return Mono.fromCallable(() -> {
-            String sql = "DELETE FROM " + tableName + " WHERE id=" + condition;
+            String sql = "DELETE FROM " + tableName + " WHERE " + condition;
 
             try (Connection connection = DatabaseConfig.getConnection();
                  PreparedStatement statement = connection.prepareStatement(sql)) {
