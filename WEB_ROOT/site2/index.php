@@ -5,11 +5,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Application</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            font-weight: 700;
+            color: #333;
+        }
+        .container {
+            margin-top: 50px;
+            max-width: 600px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .message-box {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            position: relative;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .message-box strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #007bff;
+        }
+        .message-box .btn-group {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .message-box .btn {
+            padding: 2px 6px;
+            font-size: 10px;
+            margin-left: 5px;
+            width: 50px; 
+        }
+        .btn-primary, .btn-secondary {
+            padding: 5px 10px;
+            font-size: 12px;
+            width: 100%; 
+            margin-bottom: 5px; 
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+        .form-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 10px;
+        }
+        #chat-box {
+            height: 500px; 
+            margin-bottom: 10px; 
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-    <h1 class="mt-5">Chat Application</h1>
-    <div id="chat-box" class="border p-3 mb-3" style="height: 300px; overflow-y: scroll;">
+    <h1>Chat Application</h1>
+    <div id="chat-box" class="border p-3 mb-3" style="overflow-y: scroll;">
         <!-- messages -->
     </div>
     <form id="message-form">
@@ -19,9 +97,11 @@
         <div class="form-group">
             <textarea id="message" class="form-control" rows="3" placeholder="Type your message here..." required></textarea>
         </div>
-        <button type="submit" class="btn btn-primary">Send</button>
+        <div class="form-buttons">
+            <button type="submit" class="btn btn-primary">Send</button>
+            <button id="refresh-btn" class="btn btn-secondary">Refresh</button>
+        </div>
     </form>
-    <button id="refresh-btn" class="btn btn-secondary mt-3">Refresh Chat</button>
 </div>
 
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
@@ -65,10 +145,12 @@
                 chatBox.innerHTML = '';
                 data.forEach(message => {
                     chatBox.innerHTML += `
-                        <div>
+                        <div class="message-box">
                             <strong>${message.username}:</strong> ${message.text}
-                            <button class="btn btn-sm btn-warning" onclick="editMessage('${message.id}', '${message.username}', '${message.text}')">Edit</button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteMessage('${message.id}')">Delete</button>
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-warning" onclick="editMessage('${message.id}', '${message.username}', '${message.text}')">Edit</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteMessage('${message.id}')">Delete</button>
+                            </div>
                         </div>`;
                 });
                 chatBox.scrollTop = chatBox.scrollHeight; // Scroll to bottom
@@ -84,14 +166,21 @@
             },
             body: `username=${encodeURIComponent(username)}&text=${encodeURIComponent(text)}`
         }).then(response => response.json())
-        .then(() => fetchMessages());
+        .then(() => {
+            fetchMessages(); // Fetch messages after posting
+        }).catch(error => {
+            console.error('Error posting message:', error);
+        });
     };
 
     // delete a message
     function deleteMessage(id) {
         fetch(`${apiUrl}/data/messages/${id}`, {
             method: 'DELETE'
-        }).then(() => fetchMessages());
+        }).then(() => fetchMessages())
+        .catch(error => {
+            console.error('Error deleting message:', error);
+        });
     }
 
     // update a message
@@ -102,7 +191,10 @@
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: `username=${encodeURIComponent(username)}&text=${encodeURIComponent(text)}`
-        }).then(() => fetchMessages());
+        }).then(() => fetchMessages())
+        .catch(error => {
+            console.error('Error updating message:', error);
+        });
     }
 
     // edit message
