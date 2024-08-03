@@ -6,7 +6,7 @@ import java.security.KeyStore;
 
 public class SSLConfiguration {
     private static final String KEYSTORE_PATH = "/etc/ssl/keystore.jks";
-    private static final String KEYSTORE_PASSWORD = "Text@0987"; // Consider using environment variables or a secure config file
+    private static final String KEYSTORE_PASSWORD = "Text@0987";
 
     public static SSLServerSocketFactory getServerSocketFactory() throws Exception {
         SSLContext sslContext = createSSLContext();
