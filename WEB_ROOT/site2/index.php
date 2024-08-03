@@ -48,13 +48,13 @@
             padding: 2px 6px;
             font-size: 10px;
             margin-left: 5px;
-            width: 50px; 
+            width: 50px;
         }
         .btn-primary, .btn-secondary {
             padding: 5px 10px;
             font-size: 12px;
-            width: 100%; 
-            margin-bottom: 5px; 
+            width: 100%;
+            margin-bottom: 5px;
         }
         .btn-primary {
             background-color: #007bff;
@@ -79,8 +79,8 @@
             gap: 10px;
         }
         #chat-box {
-            height: 500px; 
-            margin-bottom: 10px; 
+            height: 500px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -175,30 +175,37 @@
 
     // delete a message
     function deleteMessage(id) {
+        console.log(`Deleting message ID: ${id}`);
         fetch(`${apiUrl}/data/messages/${id}`, {
             method: 'DELETE'
-        }).then(() => fetchMessages())
-        .catch(error => {
+        }).then(() => {
+            console.log(`Deleted message ID: ${id}`);
+            fetchMessages();
+        }).catch(error => {
             console.error('Error deleting message:', error);
         });
     }
 
     // update a message
     function updateMessage(id, username, text) {
+        console.log(`Updating message ID: ${id}`);
         fetch(`${apiUrl}/data/messages/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: `username=${encodeURIComponent(username)}&text=${encodeURIComponent(text)}`
-        }).then(() => fetchMessages())
-        .catch(error => {
+        }).then(() => {
+            console.log(`Updated message ID: ${id}`);
+            fetchMessages();
+        }).catch(error => {
             console.error('Error updating message:', error);
         });
     }
 
     // edit message
     function editMessage(id, username, text) {
+        console.log(`Editing message ID: ${id}, Username: ${username}, Text: ${text}`);
         document.getElementById('editMessageId').value = id;
         document.getElementById('editUsername').value = username;
         document.getElementById('editMessage').value = text;
@@ -228,7 +235,6 @@
 
     // fetch messages on initial load
     fetchMessages();
-    
 </script>
 </body>
 </html>

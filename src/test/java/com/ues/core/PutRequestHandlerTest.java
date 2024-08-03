@@ -27,8 +27,8 @@ class PutRequestHandlerTest {
     void handle_updateDataSuccess() {
         HttpRequest request = mock(HttpRequest.class);
         HttpResponse response = new HttpResponse();
-        when(request.getPath()).thenReturn("/table/1");
-        when(request.getBody()).thenReturn("key=value");
+        when(request.getPath()).thenReturn("/data/messages/1");
+        when(request.getBody()).thenReturn("username=admin&text=Hi");
 
         try (MockedStatic<ResourceManager> mockedStatic = mockStatic(ResourceManager.class)) {
             mockedStatic.when(() -> ResourceManager.updateData(anyString(), anyMap(), anyString()))
@@ -48,8 +48,8 @@ class PutRequestHandlerTest {
     void handle_updateDataFailure() {
         HttpRequest request = mock(HttpRequest.class);
         HttpResponse response = new HttpResponse();
-        when(request.getPath()).thenReturn("/table/1");
-        when(request.getBody()).thenReturn("key=value");
+        when(request.getPath()).thenReturn("/data/messages/1");
+        when(request.getBody()).thenReturn("username=admin&text=Hi");
 
         try (MockedStatic<ResourceManager> mockedStatic = mockStatic(ResourceManager.class)) {
             mockedStatic.when(() -> ResourceManager.updateData(anyString(), anyMap(), anyString()))
@@ -63,6 +63,28 @@ class PutRequestHandlerTest {
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), response.getStatusCode());
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), response.getReasonPhrase());
             assertEquals("<h1>500 Internal Server Error</h1><p>Failed to update data</p>", new String(response.getBody()));
+        }
+    }
+
+    @Test
+    void handle_updateDataException() {
+        HttpRequest request = mock(HttpRequest.class);
+        HttpResponse response = new HttpResponse();
+        when(request.getPath()).thenReturn("/data/messages/1");
+        when(request.getBody()).thenReturn("username=admin&text=Hi");
+
+        try (MockedStatic<ResourceManager> mockedStatic = mockStatic(ResourceManager.class)) {
+            mockedStatic.when(() -> ResourceManager.updateData(anyString(), anyMap(), anyString()))
+                    .thenReturn(Mono.error(new RuntimeException("Database error")));
+
+            Mono<Void> result = putRequestHandler.handle(request, response);
+
+            StepVerifier.create(result)
+                    .verifyComplete();
+
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), response.getStatusCode());
+            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), response.getReasonPhrase());
+            assertEquals("<h1>500 Internal Server Error</h1><p>Database error</p>", new String(response.getBody()));
         }
     }
 }

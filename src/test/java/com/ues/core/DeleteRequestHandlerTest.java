@@ -29,7 +29,7 @@ class DeleteRequestHandlerTest {
     void handle_deleteDataSuccess() {
         HttpRequest request = mock(HttpRequest.class);
         HttpResponse response = new HttpResponse();
-        when(request.getPath()).thenReturn("/table/1");
+        when(request.getPath()).thenReturn("/data/messages/1");
 
         try (MockedStatic<ResourceManager> mockedStatic = mockStatic(ResourceManager.class)) {
             mockedStatic.when(() -> ResourceManager.deleteData(anyString(), anyString()))
@@ -49,7 +49,7 @@ class DeleteRequestHandlerTest {
     void handle_deleteDataFailure() {
         HttpRequest request = mock(HttpRequest.class);
         HttpResponse response = new HttpResponse();
-        when(request.getPath()).thenReturn("/table/1");
+        when(request.getPath()).thenReturn("/data/messages/1");
 
         try (MockedStatic<ResourceManager> mockedStatic = mockStatic(ResourceManager.class)) {
             mockedStatic.when(() -> ResourceManager.deleteData(anyString(), anyString()))
@@ -70,7 +70,7 @@ class DeleteRequestHandlerTest {
     void handle_deleteDataException() {
         HttpRequest request = mock(HttpRequest.class);
         HttpResponse response = new HttpResponse();
-        when(request.getPath()).thenReturn("/table/1");
+        when(request.getPath()).thenReturn("/data/messages/1");
 
         try (MockedStatic<ResourceManager> mockedStatic = mockStatic(ResourceManager.class)) {
             mockedStatic.when(() -> ResourceManager.deleteData(anyString(), anyString()))

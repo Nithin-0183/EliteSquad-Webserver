@@ -65,7 +65,10 @@ public class PutRequestHandler {
 
     private String getConditionFromPath(String path) {
         String[] parts = path.split("/");
-        return parts.length > 3 ? parts[3] : "1=1";
+        if (parts.length > 3) {
+            return "id=" + parts[3];
+        }
+        throw new IllegalArgumentException("Invalid path: ID not found");
     }
 
     private String determineContentType(HttpRequest request) {
