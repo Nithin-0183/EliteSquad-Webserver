@@ -41,5 +41,5 @@ INSERT INTO users (username, email) VALUES ('admin', 'admin@ucd.ie');
 
 -- Insert sample data into sites table
 INSERT INTO sites (domain, root, user_id, upload_path, ip_address, status_id) VALUES 
-('site1.local', '/WEB_ROOT/site1', 1, '/uploads/site1.zip', '127.0.0.2', 12100),
-('site2.local', '/WEB_ROOT/site2', 1, '/uploads/site2.zip', '127.0.0.2', 12100);
+('site1.local', 'WEB_ROOT/site1/', 1, '/uploads/site1.zip', '127.0.0.1', 12100),
+('site2.local', 'WEB_ROOT/site2/', 1, '/uploads/site2.zip', '127.0.0.1', 12100);

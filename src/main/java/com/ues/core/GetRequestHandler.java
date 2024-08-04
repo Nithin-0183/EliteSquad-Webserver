@@ -45,7 +45,9 @@ public class GetRequestHandler {
             }
 
             String adjustedPath = path.equals("/") ? "/index.php" : path;
+            System.out.println("Requested path: " + adjustedPath);
             File file = new File(rootDir, adjustedPath);
+            System.out.println("File absolute path: " + file.getAbsolutePath());
 
             if (!file.exists()) {
                 HttpResponseUtil.send404(response, "File not found: " + adjustedPath, contentType)

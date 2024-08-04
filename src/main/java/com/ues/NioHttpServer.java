@@ -1,32 +1,36 @@
 package com.ues;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import com.ues.core.RequestHandler;
+import com.ues.database.DatabaseConfig;
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
 import reactor.core.publisher.Mono;
 
 public class NioHttpServer implements Runnable {
-    private static Map<String, String> domainToRootMap = new HashMap<>();
 
+    private static Map<String, String> domainToRootMap = new HashMap<>();
     private static final int PORT = 8080;
     private static final int BUFFER_SIZE = 1024;
 
     @Override
     public void run() {
         try {
-            loadConfiguration();
+            loadConfigurationFromDatabase();
 
             AsynchronousServerSocketChannel serverChannel = AsynchronousServerSocketChannel.open();
             serverChannel.bind(new InetSocketAddress(PORT));
@@ -57,17 +61,23 @@ public class NioHttpServer implements Runnable {
         }
     }
 
-    private static void loadConfiguration() throws IOException {
-        Properties properties = new Properties();
-        try (InputStream input = NioHttpServer.class.getClassLoader().getResourceAsStream("application.properties")) {
-            if (input != null) {
-                properties.load(input);
-                domainToRootMap.put(properties.getProperty("site1.domain"), properties.getProperty("site1.root"));
-                domainToRootMap.put(properties.getProperty("site2.domain"), properties.getProperty("site2.root"));
-                System.out.println(domainToRootMap.toString());
-            } else {
-                throw new FileNotFoundException("Property file 'application.properties' not found in the classpath");
+    private static void loadConfigurationFromDatabase() {
+        try (Connection connection = DatabaseConfig.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT domain, root FROM sites")) {
+
+            while (resultSet.next()) {
+                String domain = resultSet.getString("domain");
+                String root = resultSet.getString("root");
+                domainToRootMap.put(domain, root);
+                System.out.println("Loaded domain: " + domain + ", root: " + root);
             }
+            System.out.println("Domain to Root Map: " + domainToRootMap);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("Error loading configuration from database: " + e.getMessage());
+            throw new RuntimeException("Error loading configuration from database", e);
         }
     }
 
