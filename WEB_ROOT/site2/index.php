@@ -165,9 +165,12 @@
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: `username=${encodeURIComponent(username)}&text=${encodeURIComponent(text)}`
-        }).then(response => response.json())
-        .then(() => {
-            fetchMessages(); // Fetch messages after posting
+        }).then(response => {
+            if (response.status === 201) {
+                fetchMessages(); // Fetch messages after posting
+            } else {
+                console.error('Failed to post message:', response.statusText);
+            }
         }).catch(error => {
             console.error('Error posting message:', error);
         });
@@ -229,9 +232,6 @@
         updateMessage(id, username, message);
         $('#editModal').modal('hide');
     });
-
-    // Polling to fetch messages every 5 seconds
-    setInterval(fetchMessages, 5000);
 
     // fetch messages on initial load
     fetchMessages();
