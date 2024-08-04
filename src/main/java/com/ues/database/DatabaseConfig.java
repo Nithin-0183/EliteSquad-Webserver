@@ -1,13 +1,18 @@
 package com.ues.database;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+
+import com.ues.NioHttpServer;
 
 public class DatabaseConfig {
 
@@ -52,7 +57,6 @@ public class DatabaseConfig {
                     sql.append(line).append("\n");
                 }
 
-                // Execute SQL file
                 String[] commands = sql.toString().split(";");
                 for (String command : commands) {
                     if (!command.trim().isEmpty()) {
@@ -81,5 +85,29 @@ public class DatabaseConfig {
         if (retryCount == 0) {
             throw new RuntimeException("Failed to connect to database after multiple attempts.");
         }
+    }
+
+    public static Map<String, String> loadConfigurationFromDatabase() throws IOException{
+        Map<String, String> domainToRootMap = new HashMap<>();
+        Properties properties = new Properties();
+        try {
+            InputStream input = NioHttpServer.class.getClassLoader().getResourceAsStream("application.properties");
+            properties.load(input);
+            String select_query = "select domain, root from sites";
+            Connection connection = DriverManager.getConnection(properties.getProperty("db.url")+"/"+properties.getProperty("db.database"), properties.getProperty("db.username"), properties.getProperty("db.password"));
+            PreparedStatement preparedStatement = connection.prepareStatement(select_query);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                String domain = resultSet.getString("domain");
+                String root = resultSet.getString("root");
+                domainToRootMap.put(domain, root);
+            }
+            System.out.println("DatabaseConfig << Read from Database: "+domainToRootMap.toString());
+        }catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return domainToRootMap;
     }
 }
