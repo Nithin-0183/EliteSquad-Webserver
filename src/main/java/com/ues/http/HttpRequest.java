@@ -11,11 +11,14 @@ public class HttpRequest {
     private Map<String, String> headers = new HashMap<>();
     private String body;
 
-    public HttpRequest(){
-        
+    public HttpRequest() {
     }
 
     public HttpRequest(String request) {
+        parseRequest(request);
+    }
+
+    private void parseRequest(String request) {
         String[] lines = request.split("\r\n");
         String[] requestLine = lines[0].split(" ");
         this.method = requestLine[0];
@@ -27,12 +30,12 @@ public class HttpRequest {
         for (int i = 1; i < lines.length; i++) {
             if (isBody) {
                 bodyBuilder.append(lines[i]).append("\r\n");
+            } else if (lines[i].isEmpty()) {
+                isBody = true;
             } else {
                 String[] header = lines[i].split(": ");
                 if (header.length == 2) {
                     headers.put(header[0], header[1]);
-                } else if (lines[i].isEmpty()) {
-                    isBody = true;
                 }
             }
         }
@@ -61,5 +64,20 @@ public class HttpRequest {
 
     public String getBody() {
         return body;
+    }
+
+    public void setBody(String body) {
+        System.out.println("Setting body: " + body);
+        this.body = body;
+    }
+
+    public void setRequestLine(String method, String path, String version) {
+        this.method = method;
+        this.path = path;
+        this.version = version;
+    }
+
+    public void addHeader(String name, String value) {
+        headers.put(name, value);
     }
 }

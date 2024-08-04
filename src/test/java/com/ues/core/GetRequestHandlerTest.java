@@ -1,5 +1,6 @@
 package com.ues.core;
 
+import com.ues.database.ResourceManager;
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
 import com.ues.http.HttpResponseUtil;
@@ -14,6 +15,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -116,6 +118,65 @@ class GetRequestHandlerTest {
                         .verifyComplete();
 
             mockedUtil.verify(() -> HttpResponseUtil.send404(eq(response), eq("Host not found: nonexistent.com"), eq("text/html")));
+        }
+    }
+
+    @Test
+    void handleDynamicDataRequest_success() {
+        HttpRequest request = mock(HttpRequest.class);
+        HttpResponse response = new HttpResponse();
+        when(request.getHeader("Host")).thenReturn("example.com");
+        when(request.getPath()).thenReturn("/data/chat");
+        when(request.getHeader("Accept")).thenReturn("application/json");
+
+        List<Map<String, String>> mockData = List.of(
+                Map.of("name", "John", "message", "Hello"),
+                Map.of("name", "Jane", "message", "Hi")
+        );
+
+        try (MockedStatic<ResourceManager> mockedResourceManager = mockStatic(ResourceManager.class);
+             MockedStatic<HttpResponseUtil> mockedHttpResponseUtil = mockStatic(HttpResponseUtil.class)) {
+
+            mockedResourceManager.when(() -> ResourceManager.getData(anyString(), anyString()))
+                                 .thenReturn(Mono.just(mockData));
+
+            mockedHttpResponseUtil.when(() -> HttpResponseUtil.send200(any(HttpResponse.class), anyList(), anyString()))
+                                  .thenReturn(Mono.empty());
+
+            Mono<Void> result = getRequestHandler.handle(request, response);
+
+            StepVerifier.create(result)
+                        .verifyComplete();
+
+            mockedResourceManager.verify(() -> ResourceManager.getData(eq("chat"), eq("1=1")));
+            mockedHttpResponseUtil.verify(() -> HttpResponseUtil.send200(eq(response), eq(mockData), eq("application/json")));
+        }
+    }
+
+    @Test
+    void handleDynamicDataRequest_failure() {
+        HttpRequest request = mock(HttpRequest.class);
+        HttpResponse response = new HttpResponse();
+        when(request.getHeader("Host")).thenReturn("example.com");
+        when(request.getPath()).thenReturn("/data/chat");
+        when(request.getHeader("Accept")).thenReturn("application/json");
+
+        try (MockedStatic<ResourceManager> mockedResourceManager = mockStatic(ResourceManager.class);
+             MockedStatic<HttpResponseUtil> mockedHttpResponseUtil = mockStatic(HttpResponseUtil.class)) {
+
+            mockedResourceManager.when(() -> ResourceManager.getData(anyString(), anyString()))
+                                 .thenReturn(Mono.error(new RuntimeException("Database error")));
+
+            mockedHttpResponseUtil.when(() -> HttpResponseUtil.send500(any(HttpResponse.class), anyString(), anyString()))
+                                  .thenReturn(Mono.empty());
+
+            Mono<Void> result = getRequestHandler.handle(request, response);
+
+            StepVerifier.create(result)
+                        .verifyComplete();
+
+            mockedResourceManager.verify(() -> ResourceManager.getData(eq("chat"), eq("1=1")));
+            mockedHttpResponseUtil.verify(() -> HttpResponseUtil.send500(eq(response), anyString(), eq("application/json")));
         }
     }
 }

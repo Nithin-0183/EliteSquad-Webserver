@@ -14,18 +14,26 @@ public class PostRequestHandler {
 
     public Mono<Void> handle(HttpRequest request, HttpResponse response) {
         String path = request.getPath();
+        System.out.println(request.getBody() + " " + path);
         Map<String, String> data = parseRequestBody(request.getBody());
         String contentType = determineContentType(request);
+
+        System.out.println("Received POST request with data: " + data);
 
         return ResourceManager.createData(getTableNameFromPath(path), data)
                 .flatMap(success -> {
                     if (success) {
+                        System.out.println("Data stored successfully.");
                         return HttpResponseUtil.send201(response, "Data created successfully", contentType);
                     } else {
-                        return HttpResponseUtil.send500(response, "Failed to create data", contentType);
+                        System.out.println("Failed to store data.");
+                        return HttpResponseUtil.send409(response, "Failed to create data", contentType);
                     }
                 })
-                .onErrorResume(e -> HttpResponseUtil.send500(response, e.getMessage(), contentType));
+                .onErrorResume(e -> {
+                    System.out.println("Error storing data: " + e.getMessage());
+                    return HttpResponseUtil.send500(response, e.getMessage(), contentType);
+                });
     }
 
     private Map<String, String> parseRequestBody(String body) {
@@ -49,7 +57,11 @@ public class PostRequestHandler {
     }
 
     private String getTableNameFromPath(String path) {
-        return path.split("/")[1];
+        String[] parts = path.split("/");
+        if (parts.length > 2) {
+            return parts[2];
+        }
+        throw new IllegalArgumentException("Invalid path: table name not found");
     }
 
     private String determineContentType(HttpRequest request) {

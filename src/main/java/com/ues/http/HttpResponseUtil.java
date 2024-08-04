@@ -1,11 +1,23 @@
 package com.ues.http;
 
-import java.util.Map;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
+import java.util.Map;
 
 public class HttpResponseUtil {
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
     private HttpResponseUtil() {
+    }
+
+    private static void addCORSHeaders(HttpResponse response) {
+        response.getHeaders().put("Access-Control-Allow-Origin", "*");
+        response.getHeaders().put("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        response.getHeaders().put("Access-Control-Allow-Headers", "Content-Type");
     }
 
     // Common response sender with content type
@@ -13,8 +25,19 @@ public class HttpResponseUtil {
         response.setStatusCode(status.getCode());
         response.setReasonPhrase(status.getReasonPhrase());
         response.setHeaders(Map.of("Content-Type", contentType));
+        addCORSHeaders(response);
         response.setBody(bodyContent.getBytes());
         return Mono.empty();
+    }
+
+    // Overloaded send200 method to handle List<Map<String, String>>
+    public static Mono<Void> send200(HttpResponse response, List<Map<String, String>> bodyContent, String contentType) {
+        try {
+            String jsonString = objectMapper.writeValueAsString(bodyContent);
+            return sendResponse(response, HttpStatus.OK, jsonString, contentType);
+        } catch (JsonProcessingException e) {
+            return send500(response, e.getMessage(), contentType);
+        }
     }
 
     // 200 OK with customizable content type

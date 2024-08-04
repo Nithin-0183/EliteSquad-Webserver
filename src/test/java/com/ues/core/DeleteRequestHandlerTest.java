@@ -29,7 +29,7 @@ class DeleteRequestHandlerTest {
     void handle_deleteDataSuccess() {
         HttpRequest request = mock(HttpRequest.class);
         HttpResponse response = new HttpResponse();
-        when(request.getPath()).thenReturn("/table/1");
+        when(request.getPath()).thenReturn("/data/messages/1");
 
         try (MockedStatic<ResourceManager> mockedStatic = mockStatic(ResourceManager.class)) {
             mockedStatic.when(() -> ResourceManager.deleteData(anyString(), anyString()))
@@ -42,14 +42,15 @@ class DeleteRequestHandlerTest {
 
             assertEquals(HttpStatus.OK.getCode(), response.getStatusCode());
             assertEquals(HttpStatus.OK.getReasonPhrase(), response.getReasonPhrase());
+            assertEquals("Data deleted successfully", new String(response.getBody()));
         }
     }
 
     @Test
-    void handle_deleteDataFailure() {
+    void handle_deleteDataNotFound() {
         HttpRequest request = mock(HttpRequest.class);
         HttpResponse response = new HttpResponse();
-        when(request.getPath()).thenReturn("/table/1");
+        when(request.getPath()).thenReturn("/data/messages/1");
 
         try (MockedStatic<ResourceManager> mockedStatic = mockStatic(ResourceManager.class)) {
             mockedStatic.when(() -> ResourceManager.deleteData(anyString(), anyString()))
@@ -60,9 +61,9 @@ class DeleteRequestHandlerTest {
             StepVerifier.create(result)
                     .verifyComplete();
 
-            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), response.getStatusCode());
-            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), response.getReasonPhrase());
-            assertEquals("<h1>500 Internal Server Error</h1><p>Failed to delete data</p>", new String(response.getBody()));
+            assertEquals(HttpStatus.NOT_FOUND.getCode(), response.getStatusCode());
+            assertEquals(HttpStatus.NOT_FOUND.getReasonPhrase(), response.getReasonPhrase());
+            assertEquals("<h1>404 Not Found</h1><p>Data not found</p>", new String(response.getBody()));
         }
     }
 
@@ -70,7 +71,7 @@ class DeleteRequestHandlerTest {
     void handle_deleteDataException() {
         HttpRequest request = mock(HttpRequest.class);
         HttpResponse response = new HttpResponse();
-        when(request.getPath()).thenReturn("/table/1");
+        when(request.getPath()).thenReturn("/data/messages/1");
 
         try (MockedStatic<ResourceManager> mockedStatic = mockStatic(ResourceManager.class)) {
             mockedStatic.when(() -> ResourceManager.deleteData(anyString(), anyString()))

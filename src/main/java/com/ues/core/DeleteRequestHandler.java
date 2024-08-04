@@ -18,7 +18,7 @@ public class DeleteRequestHandler {
                     if (success) {
                         return HttpResponseUtil.send200(response, "Data deleted successfully", contentType);
                     } else {
-                        return HttpResponseUtil.send500(response, "Failed to delete data", contentType);
+                        return HttpResponseUtil.send404(response, "Data not found", contentType);
                     }
                 })
                 .onErrorResume(e -> HttpResponseUtil.send500(response, e.getMessage(), contentType));
@@ -26,15 +26,18 @@ public class DeleteRequestHandler {
 
     private String getTableNameFromPath(String path) {
         String[] parts = path.split("/");
-        if (parts.length > 1) {
-            return parts[1];
+        if (parts.length > 2) {
+            return parts[2];
         }
         throw new IllegalArgumentException("Invalid path: table name not found");
     }
 
     private String getConditionFromPath(String path) {
         String[] parts = path.split("/");
-        return parts.length > 2 ? parts[2] : "1=1";
+        if (parts.length > 3) {
+            return "id=" + parts[3];
+        }
+        throw new IllegalArgumentException("Invalid path: ID not found");
     }
 
     private String determineContentType(HttpRequest request) {

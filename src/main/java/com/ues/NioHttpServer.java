@@ -1,11 +1,15 @@
 package com.ues;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -18,15 +22,15 @@ import com.ues.http.HttpResponse;
 import reactor.core.publisher.Mono;
 
 public class NioHttpServer implements Runnable {
-    private static Map<String, String> domainToRootMap = new HashMap<>();
 
+    private static Map<String, String> domainToRootMap = new HashMap<>();
     private static final int PORT = 8080;
     private static final int BUFFER_SIZE = 1024;
 
     @Override
     public void run() {
         try {
-            domainToRootMap = DatabaseConfig.loadConfigurationFromDatabase();
+            loadConfigurationFromDatabase();
 
             AsynchronousServerSocketChannel serverChannel = AsynchronousServerSocketChannel.open();
             serverChannel.bind(new InetSocketAddress(PORT));
@@ -57,6 +61,26 @@ public class NioHttpServer implements Runnable {
         }
     }
 
+    private static void loadConfigurationFromDatabase() {
+        try (Connection connection = DatabaseConfig.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT domain, root FROM sites")) {
+
+            while (resultSet.next()) {
+                String domain = resultSet.getString("domain");
+                String root = resultSet.getString("root");
+                domainToRootMap.put(domain, root);
+                System.out.println("Loaded domain: " + domain + ", root: " + root);
+            }
+            System.out.println("Domain to Root Map: " + domainToRootMap);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("Error loading configuration from database: " + e.getMessage());
+            throw new RuntimeException("Error loading configuration from database", e);
+        }
+    }
+
     private static void handleClient(AsynchronousSocketChannel clientChannel, ThreadPoolExecutor threadPool) {
         ByteBuffer buffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
         clientChannel.read(buffer, null, new CompletionHandler<Integer, Void>() {
@@ -74,6 +98,14 @@ public class NioHttpServer implements Runnable {
                 System.out.println("Request: " + request);
 
                 HttpRequest httpRequest = new HttpRequest(request);
+                if (httpRequest.getMethod().equalsIgnoreCase("POST") || httpRequest.getMethod().equalsIgnoreCase("PUT")) {
+                    String body = new String(bytes);
+                    httpRequest.setBody(body);
+                } else if (httpRequest.getMethod().equalsIgnoreCase("DELETE") || httpRequest.getMethod().equalsIgnoreCase("GET")) {
+                    String body = new String(bytes);
+                    httpRequest.setBody(body);
+                }
+
                 HttpResponse response = new HttpResponse();
 
                 RequestHandler requestHandler = new RequestHandler(domainToRootMap);

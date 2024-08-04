@@ -31,6 +31,8 @@ public class RequestHandler {
         }
         
         System.out.println("Handling request method: " + method);
+        System.out.println(request.getHeader("Content-Type"));
+        System.out.println(request.getBody());
     
         switch (method) {
             case "GET":
@@ -49,6 +51,10 @@ public class RequestHandler {
                 return deleteRequestHandler.handle(request, response)
                     .doOnSuccess(v -> System.out.println("Handled DELETE request successfully"))
                     .doOnError(e -> System.out.println("Error handling DELETE request: " + e.getMessage()));
+            case "OPTIONS":
+                return HttpResponseUtil.send204(response)
+                        .doOnSuccess(v -> System.out.println("Handled OPTIONS request successfully"))
+                        .doOnError(e -> System.out.println("Error handling OPTIONS request: " + e.getMessage()));
             default:
                 return handleUnsupportedMethod(response)
                     .doOnSuccess(v -> System.out.println("Handled unsupported method"))
