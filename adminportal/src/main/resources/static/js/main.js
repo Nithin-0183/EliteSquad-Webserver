@@ -10,6 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
         initAddRemoveListeners();
     } else if (currentPath.endsWith('add_server.html')) {
         initFormHandler();
-        
+        // Assuming you have a reference to the form element
     }
 });

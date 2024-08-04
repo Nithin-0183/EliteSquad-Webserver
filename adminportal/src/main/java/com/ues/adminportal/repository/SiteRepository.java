@@ -8,4 +8,5 @@ import com.ues.adminportal.entity.Site;
 
 public interface SiteRepository extends JpaRepository<Site, Long> {
     List<Site> findByUser_Id(int userId);
+    boolean existsByDomain(String domain);
 }

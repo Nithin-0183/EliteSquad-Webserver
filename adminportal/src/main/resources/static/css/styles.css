@@ -63,11 +63,19 @@ th {
 
 .status-running {
     color: green;
+    font-weight: bold;
 }
 
 .status-off {
     color: red;
+    font-weight: bold;
 }
+
+.status-critical {
+    color: orange;
+    font-weight: bold;
+}
+
 
 button {
     padding: 10px 20px;

@@ -14,6 +14,7 @@ import com.ues.adminportal.entity.User;
 import com.ues.adminportal.repository.SiteRepository;
 import com.ues.adminportal.repository.StatusRepository;
 import com.ues.adminportal.repository.UserRepository;
+import com.ues.adminportal.service.SiteService;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -26,6 +27,9 @@ import java.util.Map;
 public class AdminController {
 
      private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
+
+    @Autowired
+    private SiteService siteService;
 
     @Autowired
     private SiteRepository siteRepository;
@@ -50,6 +54,13 @@ public class AdminController {
         return ResponseEntity.ok(sites);
     }
 
+    @GetMapping("/check-domain")
+    public ResponseEntity<Map<String, Boolean>> checkDomain(@RequestParam String domain) {
+        boolean exists = siteService.isDomainExists(domain);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("exists", exists);
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping("/add-server")
     public ResponseEntity<Map<String, String>> addServer(@RequestParam("domain") String domain,
@@ -101,10 +112,18 @@ public class AdminController {
         }
     }
 
-
     @PostMapping("/remove-server")
-    public ResponseEntity<String> removeServer(@RequestParam Long siteId) {
-        siteRepository.deleteById(siteId);
-        return ResponseEntity.ok("Website removed successfully");
+    public ResponseEntity<Map<String, String>> removeServer(@RequestBody Map<String, Long> request) {
+        Long siteId = request.get("siteId");
+        Map<String, String> response = new HashMap<>();
+        if (siteId != null && siteRepository.existsById(siteId)) {
+            siteRepository.deleteById(siteId);
+            response.put("message", "Website removed successfully");
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("message", "Website not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
     }
+
 }

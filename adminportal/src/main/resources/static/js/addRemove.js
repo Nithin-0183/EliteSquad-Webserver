@@ -10,7 +10,7 @@ function loadServers() {
                 row.innerHTML = `
                     <td>${server.domain}</td>
                     <td>${server.ipAddress}</td>
-                    <td><button onclick="removeServer('${server.domain}')">Remove</button></td>
+                    <td><button onclick="removeServer('${server.id}')">Remove</button></td>
                 `;
                 tableBody.appendChild(row);
             });
@@ -18,19 +18,20 @@ function loadServers() {
         .catch(error => console.error('Error fetching server status:', error));
 }
 
-function removeServer(domain) {
+function removeServer(siteId) {
     fetch('/admin/remove-server', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ domain })
+        body: JSON.stringify({ siteId })
     })
     .then(response => response.json())
     .then(data => {
         alert(data.message);
-        loadServers();
+        loadServers(); // Reload the server list after deletion
     })
     .catch(error => console.error('Error:', error));
 }
+
 
 function initAddRemoveListeners() {
     const popup = document.getElementById('add-server-popup');
