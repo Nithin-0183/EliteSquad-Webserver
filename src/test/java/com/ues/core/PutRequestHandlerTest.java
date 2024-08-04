@@ -12,7 +12,10 @@ import reactor.test.StepVerifier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 class PutRequestHandlerTest {
 
@@ -41,11 +44,12 @@ class PutRequestHandlerTest {
 
             assertEquals(HttpStatus.OK.getCode(), response.getStatusCode());
             assertEquals(HttpStatus.OK.getReasonPhrase(), response.getReasonPhrase());
+            assertEquals("Data updated successfully", new String(response.getBody()));
         }
     }
 
     @Test
-    void handle_updateDataFailure() {
+    void handle_updateDataNotFound() {
         HttpRequest request = mock(HttpRequest.class);
         HttpResponse response = new HttpResponse();
         when(request.getPath()).thenReturn("/data/messages/1");
@@ -60,9 +64,9 @@ class PutRequestHandlerTest {
             StepVerifier.create(result)
                     .verifyComplete();
 
-            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), response.getStatusCode());
-            assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), response.getReasonPhrase());
-            assertEquals("<h1>500 Internal Server Error</h1><p>Failed to update data</p>", new String(response.getBody()));
+            assertEquals(HttpStatus.NOT_FOUND.getCode(), response.getStatusCode());
+            assertEquals(HttpStatus.NOT_FOUND.getReasonPhrase(), response.getReasonPhrase());
+            assertEquals("<h1>404 Not Found</h1><p>Data not found</p>", new String(response.getBody()));
         }
     }
 

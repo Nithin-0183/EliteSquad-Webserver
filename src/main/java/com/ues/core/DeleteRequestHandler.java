@@ -18,7 +18,7 @@ public class DeleteRequestHandler {
                     if (success) {
                         return HttpResponseUtil.send200(response, "Data deleted successfully", contentType);
                     } else {
-                        return HttpResponseUtil.send500(response, "Failed to delete data", contentType);
+                        return HttpResponseUtil.send404(response, "Data not found", contentType);
                     }
                 })
                 .onErrorResume(e -> HttpResponseUtil.send500(response, e.getMessage(), contentType));

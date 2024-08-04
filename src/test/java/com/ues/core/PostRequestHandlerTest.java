@@ -13,7 +13,9 @@ import reactor.test.StepVerifier;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 class PostRequestHandlerTest {
 
@@ -42,11 +44,12 @@ class PostRequestHandlerTest {
 
             assertEquals(HttpStatus.CREATED.getCode(), response.getStatusCode());
             assertEquals(HttpStatus.CREATED.getReasonPhrase(), response.getReasonPhrase());
+            assertEquals("Data created successfully", new String(response.getBody()));
         }
     }
 
     @Test
-    void handle_createDataFailure() {
+    void handle_createDataConflict() {
         HttpRequest request = mock(HttpRequest.class);
         HttpResponse response = new HttpResponse();
         when(request.getPath()).thenReturn("/data/messages");
@@ -61,9 +64,31 @@ class PostRequestHandlerTest {
             StepVerifier.create(result)
                     .verifyComplete();
 
+            assertEquals(HttpStatus.CONFLICT.getCode(), response.getStatusCode());
+            assertEquals(HttpStatus.CONFLICT.getReasonPhrase(), response.getReasonPhrase());
+            assertEquals("<h1>409 Conflict</h1><p>Failed to create data</p>", new String(response.getBody()));
+        }
+    }
+
+    @Test
+    void handle_createDataException() {
+        HttpRequest request = mock(HttpRequest.class);
+        HttpResponse response = new HttpResponse();
+        when(request.getPath()).thenReturn("/data/messages");
+        when(request.getBody()).thenReturn("username=Chungman%20Lee&text=Hi");
+
+        try (MockedStatic<ResourceManager> mockedStatic = mockStatic(ResourceManager.class)) {
+            mockedStatic.when(() -> ResourceManager.createData(anyString(), anyMap()))
+                    .thenReturn(Mono.error(new RuntimeException("Database error")));
+
+            Mono<Void> result = postRequestHandler.handle(request, response);
+
+            StepVerifier.create(result)
+                    .verifyComplete();
+
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.getCode(), response.getStatusCode());
             assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), response.getReasonPhrase());
-            assertEquals("<h1>500 Internal Server Error</h1><p>Failed to create data</p>", new String(response.getBody()));
+            assertEquals("<h1>500 Internal Server Error</h1><p>Database error</p>", new String(response.getBody()));
         }
     }
 }

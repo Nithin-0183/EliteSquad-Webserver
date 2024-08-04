@@ -27,7 +27,7 @@ public class PostRequestHandler {
                         return HttpResponseUtil.send201(response, "Data created successfully", contentType);
                     } else {
                         System.out.println("Failed to store data.");
-                        return HttpResponseUtil.send500(response, "Failed to create data", contentType);
+                        return HttpResponseUtil.send409(response, "Failed to create data", contentType);
                     }
                 })
                 .onErrorResume(e -> {

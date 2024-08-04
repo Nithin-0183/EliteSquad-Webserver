@@ -26,7 +26,7 @@ public class PutRequestHandler {
                     if (success) {
                         return HttpResponseUtil.send200(response, "Data updated successfully", contentType);
                     } else {
-                        return HttpResponseUtil.send500(response, "Failed to update data", contentType);
+                        return HttpResponseUtil.send404(response, "Data not found", contentType);
                     }
                 })
                 .onErrorResume(e -> {
