@@ -155,7 +155,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 <script>
-    const apiUrl = 'https://site2.local:8443'; // API
+    const apiUrl = window.location.origin; // API URL 동적으로 설정
 
     // fetch tasks
     function fetchTasks() {
