@@ -3,7 +3,7 @@ function loadServerStatus() {
         .then(response => response.json())
         .then(data => {
             const tableBody = document.getElementById('server-status-body');
-            tableBody.innerHTML = ''; // Clear the table before appending
+            tableBody.innerHTML = ''; 
 
             data.forEach(server => {
                 const statusClass = getStatusClass(server.statusName); 
@@ -11,6 +11,7 @@ function loadServerStatus() {
                 row.innerHTML = `
                     <td>${server.domain}</td>
                     <td>${server.ipAddress}</td>
+                    <td>${server.port}</td>
                     <td class="${statusClass}">${server.statusName}</td>
                 `;
                 tableBody.appendChild(row);
@@ -19,15 +20,4 @@ function loadServerStatus() {
         .catch(error => console.error('Error fetching server status:', error));
 }
 
-function getStatusClass(status) {
-    switch (status.toLowerCase()) {
-        case 'running':
-            return 'status-running';
-        case 'off':
-            return 'status-off';
-        case 'critical':
-            return 'status-critical';
-        default:
-            return '';  // Return an empty string if no class is applicable
-    }
-}
+

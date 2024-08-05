@@ -3,14 +3,28 @@ function loadServers() {
         .then(response => response.json())
         .then(data => {
             const tableBody = document.getElementById('server-list');
-            tableBody.innerHTML = ''; // Clear the table before appending
+            tableBody.innerHTML = ''; 
 
             data.forEach(server => {
+                const protocol = server.port === 8443 ? 'https' : 'http';
+                const url = `${protocol}://${server.domain}:${server.port}`; 
+                const statusClass = getStatusClass(server.statusName);
+
+                const actionButton = server.statusName.toLowerCase() === 'running' 
+                    ? `<button onclick="stopServer('${server.id}')">Stop</button>` 
+                    : `<button onclick="startServer('${server.id}')">Start</button>`;
+
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${server.domain}</td>
                     <td>${server.ipAddress}</td>
-                    <td><button onclick="removeServer('${server.id}')">Remove</button></td>
+                    <td>${server.port}</td>
+                    <td class="${statusClass}">${server.statusName}</td>
+                    <td><a href="${url}" target="_blank">Test Site</a></td>
+                    <td>
+                        ${actionButton}
+                        <button onclick="removeServer('${server.id}')">Remove</button>
+                    </td>
                 `;
                 tableBody.appendChild(row);
             });
@@ -27,11 +41,38 @@ function removeServer(siteId) {
     .then(response => response.json())
     .then(data => {
         alert(data.message);
-        loadServers(); // Reload the server list after deletion
+        loadServers(); 
     })
     .catch(error => console.error('Error:', error));
 }
 
+function stopServer(siteId) {
+    fetch('/admin/stop-server', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ siteId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        loadServers(); 
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+function startServer(siteId) {
+    fetch('/admin/start-server', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ siteId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        loadServers(); 
+    })
+    .catch(error => console.error('Error:', error));
+}
 
 function initAddRemoveListeners() {
     const popup = document.getElementById('add-server-popup');

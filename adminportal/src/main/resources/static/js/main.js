@@ -10,6 +10,19 @@ document.addEventListener('DOMContentLoaded', () => {
         initAddRemoveListeners();
     } else if (currentPath.endsWith('add_server.html')) {
         initFormHandler();
-        // Assuming you have a reference to the form element
+       
     }
 });
+
+function getStatusClass(status) {
+    switch (status.toLowerCase()) {
+        case 'running':
+            return 'status-running';
+        case 'off':
+            return 'status-off';
+        case 'critical':
+            return 'status-critical';
+        default:
+            return '';  
+    }
+}
