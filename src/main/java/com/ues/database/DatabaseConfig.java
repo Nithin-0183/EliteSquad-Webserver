@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.SQLNonTransientConnectionException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -131,6 +132,8 @@ public class DatabaseConfig {
                 domainToRootMap.put(domain, root);
             }
             System.out.println("DatabaseConfig << Read from Database: "+domainToRootMap.toString());
+        }catch(SQLNonTransientConnectionException e){
+            System.out.println("SQLNonTransientConnectionException has occurred");
         }catch (SQLException e) {
             e.printStackTrace();
         }

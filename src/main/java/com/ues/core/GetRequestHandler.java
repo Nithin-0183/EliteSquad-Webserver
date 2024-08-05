@@ -129,11 +129,13 @@ public class GetRequestHandler {
 
     private String determineContentType(HttpRequest request) {
         String acceptHeader = (request != null) ? request.getHeader("Accept") : "";
-        if (acceptHeader.contains("application/json")) {
-            return "application/json";
-        }
-        if (acceptHeader.contains("text/html")) {
-            return "text/html";
+        if(acceptHeader != null) {
+            if (acceptHeader.contains("application/json")) {
+                return "application/json";
+            }
+            if (acceptHeader.contains("text/html")) {
+                return "text/html";
+            }
         }
         return "text/plain";
     }

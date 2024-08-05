@@ -1,5 +1,6 @@
 package com.ues.core;
 
+import com.ues.database.DatabaseConfig;
 import com.ues.database.ResourceManager;
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
@@ -19,21 +20,20 @@ import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 class GetRequestHandlerTest {
 
     private GetRequestHandler getRequestHandler;
-    private Map<String, String> domainToRootMap;
 
     @TempDir
     Path tempDir;
 
     @BeforeEach
     void setUp() {
-        domainToRootMap = new HashMap<>();
-        domainToRootMap.put("example.com", tempDir.toString());
         getRequestHandler = spy(new GetRequestHandler());
     }
 
@@ -48,14 +48,21 @@ class GetRequestHandlerTest {
         Path filePath = tempDir.resolve("index.html");
         Files.createFile(filePath);
 
-        doReturn(Mono.empty()).when(getRequestHandler).sendResponse(any(File.class), any(HttpResponse.class), any(HttpRequest.class));
+        Map<String, String> domainToRootMap = new HashMap<>();
+        domainToRootMap.put("example.com", tempDir.toString());
 
-        Mono<Void> result = getRequestHandler.handle(request, response);
+        try (MockedStatic<DatabaseConfig> mockedConfig = mockStatic(DatabaseConfig.class)) {
+            mockedConfig.when(DatabaseConfig::loadConfigurationFromDatabase).thenReturn(domainToRootMap);
 
-        StepVerifier.create(result)
-                .verifyComplete();
+            doReturn(Mono.empty()).when(getRequestHandler).sendResponse(any(File.class), any(HttpResponse.class), any(HttpRequest.class));
 
-        verify(getRequestHandler).sendResponse(any(File.class), eq(response), eq(request));
+            Mono<Void> result = getRequestHandler.handle(request, response);
+
+            StepVerifier.create(result)
+                    .verifyComplete();
+
+            verify(getRequestHandler).sendResponse(any(File.class), eq(response), eq(request));
+        }
     }
 
     @Test
@@ -66,7 +73,13 @@ class GetRequestHandlerTest {
         when(request.getPath()).thenReturn("/nonexistent.html");
         when(request.getHeader("Accept")).thenReturn("text/html");
 
-        try (MockedStatic<HttpResponseUtil> mockedUtil = mockStatic(HttpResponseUtil.class)) {
+        Map<String, String> domainToRootMap = new HashMap<>();
+        domainToRootMap.put("example.com", tempDir.toString());
+
+        try (MockedStatic<DatabaseConfig> mockedConfig = mockStatic(DatabaseConfig.class);
+             MockedStatic<HttpResponseUtil> mockedUtil = mockStatic(HttpResponseUtil.class)) {
+            mockedConfig.when(DatabaseConfig::loadConfigurationFromDatabase).thenReturn(domainToRootMap);
+
             mockedUtil.when(() -> HttpResponseUtil.send404(any(HttpResponse.class), anyString(), anyString()))
                       .thenReturn(Mono.empty());
 
@@ -90,14 +103,21 @@ class GetRequestHandlerTest {
         Path filePath = tempDir.resolve("index.php");
         Files.createFile(filePath);
 
-        doReturn(Mono.empty()).when(getRequestHandler).executePhp(any(File.class), any(HttpResponse.class));
+        Map<String, String> domainToRootMap = new HashMap<>();
+        domainToRootMap.put("example.com", tempDir.toString());
 
-        Mono<Void> result = getRequestHandler.handle(request, response);
+        try (MockedStatic<DatabaseConfig> mockedConfig = mockStatic(DatabaseConfig.class)) {
+            mockedConfig.when(DatabaseConfig::loadConfigurationFromDatabase).thenReturn(domainToRootMap);
 
-        StepVerifier.create(result)
-                .verifyComplete();
+            doReturn(Mono.empty()).when(getRequestHandler).executePhp(any(File.class), any(HttpResponse.class));
 
-        verify(getRequestHandler).executePhp(any(File.class), eq(response));
+            Mono<Void> result = getRequestHandler.handle(request, response);
+
+            StepVerifier.create(result)
+                    .verifyComplete();
+
+            verify(getRequestHandler).executePhp(any(File.class), eq(response));
+        }
     }
 
     @Test
@@ -108,7 +128,12 @@ class GetRequestHandlerTest {
         when(request.getPath()).thenReturn("/index.html");
         when(request.getHeader("Accept")).thenReturn("text/html");
 
-        try (MockedStatic<HttpResponseUtil> mockedUtil = mockStatic(HttpResponseUtil.class)) {
+        Map<String, String> domainToRootMap = new HashMap<>();
+
+        try (MockedStatic<DatabaseConfig> mockedConfig = mockStatic(DatabaseConfig.class);
+             MockedStatic<HttpResponseUtil> mockedUtil = mockStatic(HttpResponseUtil.class)) {
+            mockedConfig.when(DatabaseConfig::loadConfigurationFromDatabase).thenReturn(domainToRootMap);
+
             mockedUtil.when(() -> HttpResponseUtil.send404(any(HttpResponse.class), anyString(), anyString()))
                       .thenReturn(Mono.empty());
 
@@ -134,8 +159,14 @@ class GetRequestHandlerTest {
                 Map.of("name", "Jane", "message", "Hi")
         );
 
-        try (MockedStatic<ResourceManager> mockedResourceManager = mockStatic(ResourceManager.class);
+        Map<String, String> domainToRootMap = new HashMap<>();
+        domainToRootMap.put("example.com", tempDir.toString());
+
+        try (MockedStatic<DatabaseConfig> mockedConfig = mockStatic(DatabaseConfig.class);
+             MockedStatic<ResourceManager> mockedResourceManager = mockStatic(ResourceManager.class);
              MockedStatic<HttpResponseUtil> mockedHttpResponseUtil = mockStatic(HttpResponseUtil.class)) {
+
+            mockedConfig.when(DatabaseConfig::loadConfigurationFromDatabase).thenReturn(domainToRootMap);
 
             mockedResourceManager.when(() -> ResourceManager.getData(anyString(), anyString()))
                                  .thenReturn(Mono.just(mockData));
@@ -145,8 +176,7 @@ class GetRequestHandlerTest {
 
             Mono<Void> result = getRequestHandler.handle(request, response);
 
-            StepVerifier.create(result)
-                        .verifyComplete();
+            StepVerifier.create(result).verifyComplete();
 
             mockedResourceManager.verify(() -> ResourceManager.getData(eq("chat"), eq("1=1")));
             mockedHttpResponseUtil.verify(() -> HttpResponseUtil.send200(eq(response), eq(mockData), eq("application/json")));
@@ -161,22 +191,31 @@ class GetRequestHandlerTest {
         when(request.getPath()).thenReturn("/data/chat");
         when(request.getHeader("Accept")).thenReturn("application/json");
 
-        try (MockedStatic<ResourceManager> mockedResourceManager = mockStatic(ResourceManager.class);
+        Map<String, String> domainToRootMap = new HashMap<>();
+        domainToRootMap.put("example.com", tempDir.toString());
+
+        try (MockedStatic<DatabaseConfig> mockedConfig = mockStatic(DatabaseConfig.class);
+             MockedStatic<ResourceManager> mockedResourceManager = mockStatic(ResourceManager.class);
              MockedStatic<HttpResponseUtil> mockedHttpResponseUtil = mockStatic(HttpResponseUtil.class)) {
+
+            mockedConfig.when(DatabaseConfig::loadConfigurationFromDatabase).thenReturn(domainToRootMap);
 
             mockedResourceManager.when(() -> ResourceManager.getData(anyString(), anyString()))
                                  .thenReturn(Mono.error(new RuntimeException("Database error")));
+                                 mockedHttpResponseUtil.when(() -> HttpResponseUtil.send500(any(HttpResponse.class), anyString(), anyString()))
+                                 .thenReturn(Mono.empty());
 
-            mockedHttpResponseUtil.when(() -> HttpResponseUtil.send500(any(HttpResponse.class), anyString(), anyString()))
-                                  .thenReturn(Mono.empty());
+           Mono<Void> result = getRequestHandler.handle(request, response);
 
-            Mono<Void> result = getRequestHandler.handle(request, response);
+           StepVerifier.create(result)
+                       .verifyComplete();
 
-            StepVerifier.create(result)
-                        .verifyComplete();
-
-            mockedResourceManager.verify(() -> ResourceManager.getData(eq("chat"), eq("1=1")));
-            mockedHttpResponseUtil.verify(() -> HttpResponseUtil.send500(eq(response), anyString(), eq("application/json")));
-        }
-    }
+           mockedResourceManager.verify(() -> ResourceManager.getData(eq("chat"), eq("1=1")));
+           mockedHttpResponseUtil.verify(() -> HttpResponseUtil.send500(eq(response), anyString(), eq("application/json")));
+       }
+   }
 }
+
+
+
+
