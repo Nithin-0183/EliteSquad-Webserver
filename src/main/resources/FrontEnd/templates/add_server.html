@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Website</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div class="container">
+    <h2>Add New Website</h2>
+    <form id="add-server-form">
+        <div class="form-group">
+            <label for="domain">Domain:</label>
+            <input type="text" id="domain" name="domain" required>
+        </div>
+        <div class="form-group">
+            <label for="ip">IP address:</label>
+            <input type="text" id="ip" name="ip" required>
+        </div>
+        <div class="form-group">
+            <label for="port">Port:</label>
+            <input type="text" id="port" name="port" required>
+        </div>
+        <div class="form-group">
+            <label for="zip-file">Upload Zip File:</label>
+            <input type="file" id="zip-file" name="zip-file" accept=".zip" required>
+        </div>
+        <div class="form-group">
+            <button type="submit">Add Website</button>
+        </div>
+    </form>
+</div>
+<script src="./scripts.js"></script>
+</body>
+</html>

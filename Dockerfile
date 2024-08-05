@@ -6,9 +6,12 @@ WORKDIR /app
 
 # Install necessary packages including PHP and php-cgi
 RUN apt-get update && \
-    apt-get install -y php php-cgi && \
-    rm -rf /var/lib/apt/lists/*
-
+    apt-get install -y \
+    php \
+    php-cgi \
+    build-essential \
+    curl && \
+    apt-get clean
 
 # Copy the Java application JAR file into the container
 COPY target/elitesquad-webserver-0.0.1-SNAPSHOT.jar /app/elitesquad-webserver-0.0.1-SNAPSHOT.jar
@@ -22,9 +25,16 @@ COPY keystore.jks /etc/ssl/keystore.jks
 # Copy the WEB_ROOT directory into the container
 COPY WEB_ROOT /app/WEB_ROOT/
 
-# Copy the script to update /etc/hosts
+# Copy the FrontEnd directory into the container
+COPY src/main/resources/FrontEnd /app/FrontEnd/
+
+# Copy the scripts into the container
 COPY update-hosts.sh /app/update-hosts.sh
-RUN chmod +x /app/update-hosts.sh # && ls -l /app/update-hosts.sh
+COPY modify_hosts.sh /app/modify_hosts.sh
+COPY wrk_test.sh /app/wrk_test.sh
+
+# Make the scripts executable
+RUN chmod +x /app/update-hosts.sh /app/modify_hosts.sh /app/wrk_test.sh
 
 # Expose ports 8080 and 8443
 EXPOSE 8080 8443
