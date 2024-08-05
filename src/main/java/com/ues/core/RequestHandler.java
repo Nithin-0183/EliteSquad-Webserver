@@ -5,19 +5,15 @@ import com.ues.http.HttpResponse;
 import com.ues.http.HttpResponseUtil;
 import reactor.core.publisher.Mono;
 
-import java.util.Map;
-
 public class RequestHandler {
 
-    private final Map<String, String> domainToRootMap;
     private final GetRequestHandler getRequestHandler;
     private final PostRequestHandler postRequestHandler;
     private final PutRequestHandler putRequestHandler;
     private final DeleteRequestHandler deleteRequestHandler;
 
-    public RequestHandler(Map<String, String> domainToRootMap) {
-        this.domainToRootMap = domainToRootMap;
-        this.getRequestHandler = new GetRequestHandler(domainToRootMap);
+    public RequestHandler()  {
+        this.getRequestHandler = new GetRequestHandler();
         this.postRequestHandler = new PostRequestHandler();
         this.putRequestHandler = new PutRequestHandler();
         this.deleteRequestHandler = new DeleteRequestHandler();

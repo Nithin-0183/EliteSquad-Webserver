@@ -1,5 +1,6 @@
 package com.ues.core;
 
+import com.ues.database.DatabaseConfig;
 import com.ues.database.ResourceManager;
 import com.ues.http.HttpRequest;
 import com.ues.http.HttpResponse;
@@ -12,14 +13,20 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.Map;
 
 public class GetRequestHandler {
 
-    private final Map<String, String> domainToRootMap;
+    private static Map<String, String> domainToRootMap;
 
-    public GetRequestHandler(Map<String, String> domainToRootMap) {
-        this.domainToRootMap = domainToRootMap;
+    public GetRequestHandler() {
+        try {
+            domainToRootMap = DatabaseConfig.loadConfigurationFromDatabase();
+        } catch (IOException e) {
+            e.printStackTrace();
+            domainToRootMap = new HashMap<>();
+        }
     }
 
     public Mono<Void> handle(HttpRequest request, HttpResponse response) {

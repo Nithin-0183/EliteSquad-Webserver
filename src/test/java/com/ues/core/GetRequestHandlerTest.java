@@ -34,7 +34,7 @@ class GetRequestHandlerTest {
     void setUp() {
         domainToRootMap = new HashMap<>();
         domainToRootMap.put("example.com", tempDir.toString());
-        getRequestHandler = spy(new GetRequestHandler(domainToRootMap));
+        getRequestHandler = spy(new GetRequestHandler());
     }
 
     @Test
