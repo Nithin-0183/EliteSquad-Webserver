@@ -40,12 +40,6 @@ public class PostRequestHandler {
         Map<String, String> data = new HashMap<>();
 
         if (body != null && !body.isEmpty()) {
-            String[] parts = body.split("\r\n\r\n");
-            if (parts.length > 1) {
-                body = parts[1];
-            }
-            System.err.println("Separated thing: " + body);
-
             String[] pairs = body.split("&");
 
             System.out.println("Pairs:");

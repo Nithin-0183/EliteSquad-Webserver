@@ -21,17 +21,22 @@ public class GetRequestHandler {
     private static Map<String, String> domainToRootMap;
 
     public GetRequestHandler() {
-        try {
-            domainToRootMap = DatabaseConfig.loadConfigurationFromDatabase();
-        } catch (IOException e) {
-            e.printStackTrace();
-            domainToRootMap = new HashMap<>();
-        }
+        
     }
 
     public Mono<Void> handle(HttpRequest request, HttpResponse response) {
         final String path = request.getPath();
         final String contentType = determineContentType(request);
+
+        try {
+            domainToRootMap = DatabaseConfig.loadConfigurationFromDatabase();
+        } catch (IOException e) {
+            e.printStackTrace();
+            if(domainToRootMap == null)
+            {
+                domainToRootMap = new HashMap<>();
+            }
+        }
 
         if (path.startsWith("/data/")) {
             final String tableName = getTableNameFromPath(path);
@@ -123,7 +128,7 @@ public class GetRequestHandler {
     }
 
     private String determineContentType(HttpRequest request) {
-        String acceptHeader = request != null ? request.getHeader("Accept") : "";
+        String acceptHeader = (request != null) ? request.getHeader("Accept") : "";
         if (acceptHeader.contains("application/json")) {
             return "application/json";
         }

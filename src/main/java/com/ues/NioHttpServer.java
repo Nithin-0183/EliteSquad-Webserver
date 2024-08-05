@@ -69,15 +69,16 @@ public class NioHttpServer implements Runnable {
                 buffer.get(bytes);
                 String request = new String(bytes);
                 System.out.println("Request: " + request);
+                
+                String body = new String(bytes);
+                String[] parts = body.split("\r\n\r\n");
+                if (parts.length > 1) {
+                    body = parts[1];
+                }
+                System.out.println("NioHttpServer >> Body: " + body);
 
                 HttpRequest httpRequest = new HttpRequest(request);
-                if (httpRequest.getMethod().equalsIgnoreCase("POST") || httpRequest.getMethod().equalsIgnoreCase("PUT")) {
-                    String body = new String(bytes);
-                    httpRequest.setBody(body);
-                } else if (httpRequest.getMethod().equalsIgnoreCase("DELETE") || httpRequest.getMethod().equalsIgnoreCase("GET")) {
-                    String body = new String(bytes);
-                    httpRequest.setBody(body);
-                }
+                httpRequest.setBody(body);
 
                 HttpResponse response = new HttpResponse();
 
