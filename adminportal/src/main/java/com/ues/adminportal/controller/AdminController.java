@@ -30,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/admin")
@@ -89,7 +90,7 @@ public class AdminController {
         
          Path path = Paths.get(originalFilename);
          String filenameWithoutExtension = path.getFileName().toString().replaceFirst("[.][^.]+$", "");
-         String rootDestination = uploadDir + "/" + filenameWithoutExtension;
+         String rootDestination = uploadDir + filenameWithoutExtension;
 
         try {
             // Ensure the WEB_ROOT directory exists
@@ -116,22 +117,21 @@ public class AdminController {
                 fos.write(zipFile.getBytes());
             }
 
-            // Unzip the file
+            
             unzipFile(uploadDestination, uploadDir);
 
-            // Delete the ZIP file after extraction
             Files.delete(Paths.get(uploadDestination));
 
-            // Find the running status
+            
             Status runningStatus = statusRepository.findById(12100)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid status ID"));
             User user = userRepository.findById((long) userId)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 
-            // Create a new Site entity and save it to the repository
+            
             Site site = new Site();
             site.setDomain(domain);
-            site.setRoot(uploadDestination);
+            site.setRoot(rootDestination);
             site.setIpAddress(ipAddress);
             site.setUser(user);
             site.setPort(port);
@@ -190,5 +190,71 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
+
+    @PostMapping("/stop-server")
+    public ResponseEntity<Map<String, String>> stopServer(@RequestBody Map<String, Long> request) {
+        Long siteId = request.get("siteId");
+        Map<String, String> response = new HashMap<>();
+
+        if (siteId != null && siteRepository.existsById(siteId)) {
+            
+            Optional<Site> optionalSite = siteRepository.findById(siteId);
+            if (optionalSite.isPresent()) {
+                Site site = optionalSite.get();
+
+                
+                Optional<Status> optionalStatus = statusRepository.findById(12101);
+                if (optionalStatus.isPresent()) {
+                    site.setStatus(optionalStatus.get());
+                    siteRepository.save(site);
+                    response.put("message", "Website stopped successfully");
+                    return ResponseEntity.ok(response);
+                } else {
+                    response.put("message", "Invalid status ID");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                }
+            } else {
+                response.put("message", "Website not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } else {
+            response.put("message", "Website not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+    }
+
+    @PostMapping("/start-server")
+    public ResponseEntity<Map<String, String>> startServer(@RequestBody Map<String, Long> request) {
+        Long siteId = request.get("siteId");
+        Map<String, String> response = new HashMap<>();
+
+        if (siteId != null && siteRepository.existsById(siteId)) {
+            
+            Optional<Site> optionalSite = siteRepository.findById(siteId);
+            if (optionalSite.isPresent()) {
+                Site site = optionalSite.get();
+
+                
+                Optional<Status> optionalStatus = statusRepository.findById(12100);
+                if (optionalStatus.isPresent()) {
+                    site.setStatus(optionalStatus.get());
+                    siteRepository.save(site);
+                    response.put("message", "Website started successfully");
+                    return ResponseEntity.ok(response);
+                } else {
+                    response.put("message", "Invalid status ID");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                }
+            } else {
+                response.put("message", "Website not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
+        } else {
+            response.put("message", "Website not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+}
+
+
 
 }
