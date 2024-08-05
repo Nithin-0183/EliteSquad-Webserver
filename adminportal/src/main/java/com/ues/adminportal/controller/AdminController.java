@@ -22,6 +22,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
@@ -62,31 +71,103 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
+    // @PostMapping("/add-server")
+    // public ResponseEntity<Map<String, String>> addServer(@RequestParam("domain") String domain,
+    //                                         @RequestParam("ipAddress") String ipAddress,
+    //                                         @RequestParam("userId") int userId,
+    //                                         @RequestParam("zipFile") MultipartFile zipFile) {
+    //     try {
+    //         // Define the upload path
+    //         String uploadDir = "/WEB_ROOT/" + domain;
+    //         //File targetFile = new File(uploadDir);
+            
+    //         // Create directories if they do not exist
+    //         // if (!targetFile.exists()) {
+    //         //     targetFile.mkdirs();
+    //         // }
+            
+    //         // Save the uploaded file
+    //         //File uploadDestination = new File(uploadDir, zipFile.getOriginalFilename());
+    //         //zipFile.transferTo(uploadDestination);
+    //         String uploadDestination = "Upload/"+domain;
+
+    //         // Find the running status
+    //         Status runningStatus = statusRepository.findById(12100)
+    //         .orElseThrow(() -> new IllegalArgumentException("Invalid status ID"));
+    //         User user = userRepository.findById((long) userId)
+    //         .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+
+    //         // Create a new Site entity and save it to the repository
+    //         Site site = new Site();
+    //         site.setDomain(domain);
+    //         site.setRoot(uploadDir);
+    //         site.setIpAddress(ipAddress);
+    //         site.setUser(user);
+    //         site.setStatus(runningStatus);
+    //         site.setUploadPath(uploadDestination);
+    //         site.setCreatedAt(LocalDateTime.now()); 
+    //         site.setTimestamp(LocalDateTime.now()); 
+    //         siteRepository.save(site);
+
+    //         Map<String, String> response = new HashMap<>();
+    //         response.put("message", "Website added successfully");
+    //         response.put("domain", domain);
+
+    //         return ResponseEntity.ok(response);
+    //     } catch (Exception e) {
+    //         // Log the error and return a server error response
+    //         e.printStackTrace();
+    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("message", "An error occurred: " + e.getMessage()));
+    //     }
+    // }
+
     @PostMapping("/add-server")
-    public ResponseEntity<Map<String, String>> addServer(@RequestParam("domain") String domain,
-                                            @RequestParam("ipAddress") String ipAddress,
-                                            @RequestParam("userId") int userId,
-                                            @RequestParam("zipFile") MultipartFile zipFile) {
+    public ResponseEntity<Map<String, String>> addServer(
+            @RequestParam("domain") String domain,
+            @RequestParam("ipAddress") String ipAddress,
+            @RequestParam("userId") int userId,
+            @RequestParam("zipFile") MultipartFile zipFile) {
+
+        String baseDir = System.getProperty("user.home") + "/WEB_ROOT/";
+        String uploadDir = baseDir;
+        String uploadDestination = uploadDir + "/" + zipFile.getOriginalFilename();
+
         try {
-            // Define the upload path
-            String uploadDir = "/WEB_ROOT/" + domain;
-            //File targetFile = new File(uploadDir);
-            
-            // Create directories if they do not exist
-            // if (!targetFile.exists()) {
-            //     targetFile.mkdirs();
-            // }
-            
-            // Save the uploaded file
-            //File uploadDestination = new File(uploadDir, zipFile.getOriginalFilename());
-            //zipFile.transferTo(uploadDestination);
-            String uploadDestination = "Upload/"+domain;
+            // Ensure the WEB_ROOT directory exists
+            File webRootDir = new File(baseDir);
+            if (!webRootDir.exists()) {
+                boolean webRootCreated = webRootDir.mkdirs();
+                if (!webRootCreated) {
+                    throw new IOException("Failed to create base directory: " + baseDir);
+                }
+            }
+
+            // Ensure the domain-specific directory exists
+            File domainDir = new File(uploadDir);
+            if (!domainDir.exists()) {
+                boolean domainDirCreated = domainDir.mkdirs();
+                if (!domainDirCreated) {
+                    throw new IOException("Failed to create domain directory: " + uploadDir);
+                }
+            }
+
+            // Save the uploaded ZIP file
+            File zipFileOnDisk = new File(uploadDestination);
+            try (FileOutputStream fos = new FileOutputStream(zipFileOnDisk)) {
+                fos.write(zipFile.getBytes());
+            }
+
+            // Unzip the file
+            unzipFile(uploadDestination, uploadDir);
+
+            // Delete the ZIP file after extraction
+            Files.delete(Paths.get(uploadDestination));
 
             // Find the running status
             Status runningStatus = statusRepository.findById(12100)
-            .orElseThrow(() -> new IllegalArgumentException("Invalid status ID"));
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid status ID"));
             User user = userRepository.findById((long) userId)
-            .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 
             // Create a new Site entity and save it to the repository
             Site site = new Site();
@@ -95,9 +176,9 @@ public class AdminController {
             site.setIpAddress(ipAddress);
             site.setUser(user);
             site.setStatus(runningStatus);
-            site.setUploadPath(uploadDestination);
-            site.setCreatedAt(LocalDateTime.now()); 
-            site.setTimestamp(LocalDateTime.now()); 
+            site.setUploadPath(uploadDir);
+            site.setCreatedAt(LocalDateTime.now());
+            site.setTimestamp(LocalDateTime.now());
             siteRepository.save(site);
 
             Map<String, String> response = new HashMap<>();
@@ -106,11 +187,36 @@ public class AdminController {
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            // Log the error and return a server error response
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("message", "An error occurred: " + e.getMessage()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Collections.singletonMap("message", "An error occurred: " + e.getMessage()));
         }
     }
+
+    private void unzipFile(String zipFilePath, String destDir) throws IOException {
+        byte[] buffer = new byte[1024];
+        Path destDirPath = Paths.get(destDir);
+        try (ZipInputStream zis = new ZipInputStream(Files.newInputStream(Paths.get(zipFilePath)))) {
+            ZipEntry zipEntry = zis.getNextEntry();
+            while (zipEntry != null) {
+                Path newFile = destDirPath.resolve(zipEntry.getName());
+                if (zipEntry.isDirectory()) {
+                    Files.createDirectories(newFile);
+                } else {
+                    Files.createDirectories(newFile.getParent());
+                    try (FileOutputStream fos = new FileOutputStream(newFile.toFile())) {
+                        int len;
+                        while ((len = zis.read(buffer)) > 0) {
+                            fos.write(buffer, 0, len);
+                        }
+                    }
+                }
+                zipEntry = zis.getNextEntry();
+            }
+            zis.closeEntry();
+        }
+    }
+
 
     @PostMapping("/remove-server")
     public ResponseEntity<Map<String, String>> removeServer(@RequestBody Map<String, Long> request) {

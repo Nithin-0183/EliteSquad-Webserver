@@ -38,6 +38,9 @@ function initFormHandler() {
                         } else {
                             console.error('Parent window or loadServers function not found.');
                         }
+
+                        // Reset the form fields after successful submission
+                        e.target.reset();
                     })
                     .catch(error => console.error('Error:', error));
                 }
