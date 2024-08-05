@@ -71,66 +71,25 @@ public class AdminController {
         return ResponseEntity.ok(response);
     }
 
-    // @PostMapping("/add-server")
-    // public ResponseEntity<Map<String, String>> addServer(@RequestParam("domain") String domain,
-    //                                         @RequestParam("ipAddress") String ipAddress,
-    //                                         @RequestParam("userId") int userId,
-    //                                         @RequestParam("zipFile") MultipartFile zipFile) {
-    //     try {
-    //         // Define the upload path
-    //         String uploadDir = "/WEB_ROOT/" + domain;
-    //         //File targetFile = new File(uploadDir);
-            
-    //         // Create directories if they do not exist
-    //         // if (!targetFile.exists()) {
-    //         //     targetFile.mkdirs();
-    //         // }
-            
-    //         // Save the uploaded file
-    //         //File uploadDestination = new File(uploadDir, zipFile.getOriginalFilename());
-    //         //zipFile.transferTo(uploadDestination);
-    //         String uploadDestination = "Upload/"+domain;
-
-    //         // Find the running status
-    //         Status runningStatus = statusRepository.findById(12100)
-    //         .orElseThrow(() -> new IllegalArgumentException("Invalid status ID"));
-    //         User user = userRepository.findById((long) userId)
-    //         .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
-
-    //         // Create a new Site entity and save it to the repository
-    //         Site site = new Site();
-    //         site.setDomain(domain);
-    //         site.setRoot(uploadDir);
-    //         site.setIpAddress(ipAddress);
-    //         site.setUser(user);
-    //         site.setStatus(runningStatus);
-    //         site.setUploadPath(uploadDestination);
-    //         site.setCreatedAt(LocalDateTime.now()); 
-    //         site.setTimestamp(LocalDateTime.now()); 
-    //         siteRepository.save(site);
-
-    //         Map<String, String> response = new HashMap<>();
-    //         response.put("message", "Website added successfully");
-    //         response.put("domain", domain);
-
-    //         return ResponseEntity.ok(response);
-    //     } catch (Exception e) {
-    //         // Log the error and return a server error response
-    //         e.printStackTrace();
-    //         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.singletonMap("message", "An error occurred: " + e.getMessage()));
-    //     }
-    // }
 
     @PostMapping("/add-server")
     public ResponseEntity<Map<String, String>> addServer(
             @RequestParam("domain") String domain,
             @RequestParam("ipAddress") String ipAddress,
             @RequestParam("userId") int userId,
+            @RequestParam("port") int port,
             @RequestParam("zipFile") MultipartFile zipFile) {
 
-        String baseDir = System.getProperty("user.home") + "/WEB_ROOT/";
+        //String baseDir = System.getProperty("user.home") + "/app/WEB_ROOT/";
+        String baseDir = "/app/WEB_ROOT/";
         String uploadDir = baseDir;
-        String uploadDestination = uploadDir + "/" + zipFile.getOriginalFilename();
+        String originalFilename = zipFile.getOriginalFilename();
+        String uploadDestination = uploadDir + "/" + originalFilename;
+
+        
+         Path path = Paths.get(originalFilename);
+         String filenameWithoutExtension = path.getFileName().toString().replaceFirst("[.][^.]+$", "");
+         String rootDestination = uploadDir + "/" + filenameWithoutExtension;
 
         try {
             // Ensure the WEB_ROOT directory exists
@@ -172,11 +131,11 @@ public class AdminController {
             // Create a new Site entity and save it to the repository
             Site site = new Site();
             site.setDomain(domain);
-            site.setRoot(uploadDir);
+            site.setRoot(uploadDestination);
             site.setIpAddress(ipAddress);
             site.setUser(user);
+            site.setPort(port);
             site.setStatus(runningStatus);
-            site.setUploadPath(uploadDir);
             site.setCreatedAt(LocalDateTime.now());
             site.setTimestamp(LocalDateTime.now());
             siteRepository.save(site);

@@ -27,11 +27,11 @@ public class Site {
     @JsonBackReference
     private User user;
 
-    @Column(name = "upload_path")
-    private String uploadPath;
-
     @Column(name = "ip_address", nullable = false)
     private String ipAddress;
+
+    @Column(nullable = false)
+    private int port;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -76,12 +76,12 @@ public class Site {
         this.user = user;
     }
 
-    public String getUploadPath() {
-        return uploadPath;
+    public int getPort() { 
+        return port;
     }
 
-    public void setUploadPath(String uploadPath) {
-        this.uploadPath = uploadPath;
+    public void setPort(int port) {
+        this.port = port;
     }
 
     public String getIpAddress() {
@@ -100,8 +100,6 @@ public class Site {
         this.createdAt = createdAt;
     }
 
-
-  
 
     public LocalDateTime getTimestamp() {
         return timestamp;
