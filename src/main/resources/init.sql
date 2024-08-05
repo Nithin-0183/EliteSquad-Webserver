@@ -6,7 +6,8 @@ USE WebServerDB;
 CREATE TABLE IF NOT EXISTS users (
     id INT PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL
+    email VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL
 );
 
 -- Table to store the status types with predefined IDs
@@ -21,8 +22,8 @@ CREATE TABLE IF NOT EXISTS sites (
     domain VARCHAR(255) NOT NULL,
     root VARCHAR(255) NOT NULL,
     user_id INT,
-    upload_path VARCHAR(255),
-    ip_address VARCHAR(45) NOT NULL,  -- To store IPv4 or IPv6 addresses
+    ip_address VARCHAR(45) NOT NULL, 
+    port INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status_id INT,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -37,10 +38,9 @@ INSERT INTO statuses (id, name) VALUES
 (12102, 'Error');
 
 -- Insert sample data into users table
-INSERT INTO users (username, email) VALUES ('admin', 'admin@ucd.ie');
+INSERT INTO users (username, email, password) VALUES ('admin', 'admin@ucd.ie','admin123');
 
 -- Insert sample data into sites table
-INSERT INTO sites (domain, root, user_id, upload_path, ip_address, status_id) VALUES 
-
-('site1.local', 'WEB_ROOT/site1/', 1, '/uploads/site1.zip', '127.0.0.1', 12100),
-('site2.local', 'WEB_ROOT/site2/', 1, '/uploads/site2.zip', '127.0.0.1', 12100);
+INSERT INTO sites (domain, root, user_id, ip_address, port, status_id) VALUES 
+('site1.local', '/app/WEB_ROOT/site1', 1, '98.71.9.56', 8443, 12100),
+('site2.local', '/app/WEB_ROOT/site2', 1, '98.71.9.56', 8443, 12100);

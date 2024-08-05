@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +35,14 @@ public class DatabaseConfig {
 
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(
+                properties.getProperty("db.urlSrvDB"),
+                properties.getProperty("db.username"),
+                properties.getProperty("db.password")
+        );
+    }
+
+    private static Connection getMySQLConnection() throws SQLException {
+        return DriverManager.getConnection(
                 properties.getProperty("db.url"),
                 properties.getProperty("db.username"),
                 properties.getProperty("db.password")
@@ -42,10 +52,27 @@ public class DatabaseConfig {
     public static void initializeDatabase() {
         int retryCount = 5;
         while (retryCount > 0) {
-            try (Connection conn = getConnection();
+            try (Connection conn = getMySQLConnection();
                  Statement stmt = conn.createStatement();
                  InputStream inputStream = DatabaseConfig.class.getClassLoader().getResourceAsStream("init.sql");
                  BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+                    
+                boolean exists = false;
+                try (ResultSet resultSet = conn.getMetaData().getCatalogs()) {
+                    while (resultSet.next()) {
+                        String catalog = resultSet.getString(1);
+                        if (catalog.equalsIgnoreCase(properties.getProperty("db.database"))) {
+                            exists = true;
+                            break;
+                        }
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                
+                if(exists){
+                    break;
+                }
 
                 if (inputStream == null) {
                     throw new RuntimeException("Unable to find init.sql");
@@ -94,7 +121,7 @@ public class DatabaseConfig {
             InputStream input = NioHttpServer.class.getClassLoader().getResourceAsStream("application.properties");
             properties.load(input);
             String select_query = "select domain, root from sites";
-            Connection connection = DriverManager.getConnection(properties.getProperty("db.url")+"/"+properties.getProperty("db.database"), properties.getProperty("db.username"), properties.getProperty("db.password"));
+            Connection connection = getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(select_query);
             ResultSet resultSet = preparedStatement.executeQuery();
 

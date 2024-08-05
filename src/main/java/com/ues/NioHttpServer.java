@@ -6,10 +6,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousServerSocketChannel;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -30,7 +26,7 @@ public class NioHttpServer implements Runnable {
     @Override
     public void run() {
         try {
-            loadConfigurationFromDatabase();
+            domainToRootMap = DatabaseConfig.loadConfigurationFromDatabase();
 
             AsynchronousServerSocketChannel serverChannel = AsynchronousServerSocketChannel.open();
             serverChannel.bind(new InetSocketAddress(PORT));
@@ -58,26 +54,6 @@ public class NioHttpServer implements Runnable {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    private static void loadConfigurationFromDatabase() {
-        try (Connection connection = DatabaseConfig.getConnection();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT domain, root FROM sites")) {
-
-            while (resultSet.next()) {
-                String domain = resultSet.getString("domain");
-                String root = resultSet.getString("root");
-                domainToRootMap.put(domain, root);
-                System.out.println("Loaded domain: " + domain + ", root: " + root);
-            }
-            System.out.println("Domain to Root Map: " + domainToRootMap);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.err.println("Error loading configuration from database: " + e.getMessage());
-            throw new RuntimeException("Error loading configuration from database", e);
         }
     }
 
