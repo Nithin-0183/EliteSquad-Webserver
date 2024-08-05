@@ -19,15 +19,12 @@ import reactor.core.publisher.Mono;
 
 public class NioHttpServer implements Runnable {
 
-    private static Map<String, String> domainToRootMap = new HashMap<>();
     private static final int PORT = 8080;
     private static final int BUFFER_SIZE = 1024;
 
     @Override
     public void run() {
         try {
-            domainToRootMap = DatabaseConfig.loadConfigurationFromDatabase();
-
             AsynchronousServerSocketChannel serverChannel = AsynchronousServerSocketChannel.open();
             serverChannel.bind(new InetSocketAddress(PORT));
             System.out.println("Server is listening on port " + PORT);
@@ -84,7 +81,7 @@ public class NioHttpServer implements Runnable {
 
                 HttpResponse response = new HttpResponse();
 
-                RequestHandler requestHandler = new RequestHandler(domainToRootMap);
+                RequestHandler requestHandler = new RequestHandler();
                 Mono<Void> resultMono = requestHandler.handle(httpRequest, response);
 
                 resultMono.doOnTerminate(() -> {

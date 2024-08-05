@@ -120,7 +120,7 @@ public class DatabaseConfig {
         try {
             InputStream input = NioHttpServer.class.getClassLoader().getResourceAsStream("application.properties");
             properties.load(input);
-            String select_query = "select domain, root from sites";
+            String select_query = "select domain, root from sites where status_id=12100";
             Connection connection = getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(select_query);
             ResultSet resultSet = preparedStatement.executeQuery();
