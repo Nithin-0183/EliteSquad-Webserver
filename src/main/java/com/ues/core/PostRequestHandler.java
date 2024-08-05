@@ -36,10 +36,23 @@ public class PostRequestHandler {
                 });
     }
 
-    private Map<String, String> parseRequestBody(String body) {
+    public static Map<String, String> parseRequestBody(String body) {
         Map<String, String> data = new HashMap<>();
+
         if (body != null && !body.isEmpty()) {
+            String[] parts = body.split("\r\n\r\n");
+            if (parts.length > 1) {
+                body = parts[1];
+            }
+            System.err.println("Separated thing: " + body);
+
             String[] pairs = body.split("&");
+
+            System.out.println("Pairs:");
+            for (String pair : pairs) {
+                System.out.println(pair);
+            }
+
             for (String pair : pairs) {
                 String[] keyValue = pair.split("=");
                 if (keyValue.length == 2) {
@@ -53,6 +66,7 @@ public class PostRequestHandler {
                 }
             }
         }
+
         return data;
     }
 
